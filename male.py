@@ -1,1 +1,3 @@
-"import pygame" 
+import pygame
+
+pygame.init()
