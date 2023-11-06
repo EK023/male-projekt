@@ -27,6 +27,12 @@ def omad(värv):
         return valged
     else:
         return mustad
+def värv(nupu_pos):
+    if algseis[nupu_pos[0]][nupu_pos[1]].islower:
+        värv='M'
+    else:
+        värv='V'
+    return värv
 '''rea_kontroll(kumb):	#kumb võtab sisendiks kas 'Veerg' või 'Rida' 
     while i < 8:
     while i >=-8:
@@ -38,7 +44,8 @@ def omad(värv):
         if seis[i+9][veerg] == '':
             käigud.append([i,veerg])
         i-=1'''
-def vankri_käigud(seis,vankri_pos,värv): 		#värvi on tegelikult võimalik leida ka nupu positsioonist(kas ta on väike või suur täht)
+def vankri_käigud(seis,vankri_pos): 		#värvi on tegelikult võimalik leida ka nupu positsioonist(kas ta on väike või suur täht)
+    värv=värv(vankri_pos)
     rida=vankri_pos[0]
     veerg=vankri_pos[1]
     käigud=[]
@@ -80,11 +87,40 @@ def vankri_käigud(seis,vankri_pos,värv): 		#värvi on tegelikult võimalik lei
         j-=1
     return käigud
 def kuninga_käigud(seis,kuninga_pos):
-    if kuninga_pos.islower:
-        värv='M'
-    else:
-        värv='V'
-    
-print(vankri_käigud(algseis,[4,6],'M'))	
+    värv=värv(kuninga_pos)
+def oda_käigud(seis,oda_pos):
+    pool=värv(oda_pos)
+    käigud=[]
+    vastased=vaenlased(värv)
+    for i in range(4):
+        võimalik= True
+        kordaja=1
+        if i ==0:
+            x=1
+            y=1
+        elif i==1:
+            x=1
+            y=-1
+        elif i==2:
+            x=-1
+            y=1
+        else:
+            x=-1
+            y=-1
+        while võimalik:
+            x_koord=oda_pos[0]+kordaja*x
+            y_koord=oda_pos[1]+kordaja*y
+            if x_koord < 0 or y_koord < 0 or x_koord >7 or y_koord >7:
+                võimalik =False
+            elif seis[x_koord][y_koord] == ' ' or seis[x_koord][y_koord] in vaenlased(pool):
+                käigud.append([x_koord,y_koord])
+                if seis[x_koord][y_koord] in vastased:
+                    võimalik = False
+                kordaja+=1
+            else:
+                võimalik=False
+    return käigud
+print(oda_käigud(algseis,[3,3]))	
 #print(algseis[0][3-8])
+
         
