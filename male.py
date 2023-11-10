@@ -5,7 +5,7 @@ pygame.init()
 
     
             
-
+#Castle-imise ja en passanti jaoks oleks vist vaja käike meeles pidada
 #ettur(pawn),vanker(rook),ratsu(horse),oda(bishop),kuningas,lipp(queen)//
 algseis= [['v','r','o','l','k','o','r','v'],
           ['e','E','e','e','e','e','e','e'],		#väikse tähega on mustad ja esitähega on eristatavad nupud
@@ -28,7 +28,7 @@ def vaenlased(pool):		#tagastab järjendi, kus on kõik võimalikud vaenlased
         return mustad
     else:
         return valged
-def omad(pool):		#Pole vist isegi vaja
+def omad(pool):
     if pool == 'V':
         return valged
     else:
@@ -36,8 +36,7 @@ def omad(pool):		#Pole vist isegi vaja
 def vankri_käigud(seis,vankri_pos): 		#värvi on tegelikult võimalik leida ka nupu positsioonist(kas ta on väike või suur täht)
     pool=värv(vankri_pos)
     vastased = vaenlased(pool)
-    rida=vankri_pos[0]
-    veerg=vankri_pos[1]
+    rida, veerg=vankri_pos[0], vankri_pos[1]
     käigud=[]
     for i in range(rida+1,8):	#paremale käigud
         if seis[i][veerg] in vastased:
@@ -77,8 +76,6 @@ def vankri_käigud(seis,vankri_pos): 		#värvi on tegelikult võimalik leida ka 
             break
         j-=1
     return käigud
-'''def kuninga_käigud(seis,kuninga_pos):
-    värv=värv(kuninga_pos)'''
 def oda_käigud(seis,oda_pos):
     pool=värv(oda_pos)
     käigud=[]
@@ -121,8 +118,7 @@ def etturi_käigud(seis,etturi_pos):
     vastased=vaenlased(pool)
     käigud=[]
     käik= []
-    x=etturi_pos[0]
-    y=etturi_pos[1]
+    x, y=etturi_pos[0], etturi_pos[1]
     if pool == 'V':
         i=-1
         if etturi_pos[0]==6:		#vaatab, kas ettur on algpositsioonil ja lisab topelt käigu võimaluse
@@ -135,43 +131,44 @@ def etturi_käigud(seis,etturi_pos):
         käigud.append([x+i,y])
         if käik!=[] and seis[käik[0]][käik[1]]:	#kontrollib, kas topeltkäik on võimalik
             käigud.append(käik)
-    if seis[x+i][y+1] in vastased and y+1 <=7: 		#Kas on võimalik võtta diagonaalis
+    if seis[x+i][y+1] in vastased and y+1 <=7: 		#Kas on võimalik võtta diagonaalis võtta
         käigud.append([x+i,y+1])
     if seis[x+i][y-1] in vastased and y-1 >=0:
         käigud.append([x+i,y-1])
     return käigud #Veel on vaja enpassanti ja castle-imist + käikude eemaldamist, mis avaksid tule kuningale
-def üks_ratsu(seis,ratsu_pos): #kaks võtab koordinaadi, mille suhtes liigutakse 2 ruutu
+def ratsu_käigud(seis,ratsu_pos): #kaks võtab koordinaadi, mille suhtes liigutakse 2 ruutu
     pool=värv(ratsu_pos)
-    x=ratsu_pos[0]
-    y=ratsu_pos[1]
-    x_koord=x
-    y_koord=y
+    x_koord, y_koord=ratsu_pos[0], ratsu_pos[1]
     oma=omad(pool)
     suund=2
     käik=[]
     for i in range(2):
-        if i==1:
-            suund=-2
-        if x_koord+suund<8 and x_koord+suund >=0:
+        if i==1:		#alguses otsib käigud, mis jäävad alla ja paremale
+            suund=-2	#Siin otsib ülejäänud suunda jäävad käigud
+        if x_koord+suund<8 and x_koord+suund >=0:		#2 käiku x-teljel 
             if y_koord+1<8 and seis[x_koord+suund][y_koord+1] not in oma:
                 käik.append([x_koord+suund,y_koord+1])
             if y_koord-1>=0 and seis[x_koord+suund][y_koord-1] not in oma:
                 käik.append([x_koord+suund,y_koord-1])
-        if y_koord+suund<8 and y_koord+suund >=0:
+        if y_koord+suund<8 and y_koord+suund >=0:		#2 käiku y-teljel
             if x_koord+1<8 and seis[x_koord+1][y_koord+suund] not in oma:
                 käik.append([x_koord+1,y_koord+suund])
             if x_koord-1<8 and seis[x_koord-1][y_koord+suund] not in oma:
                 käik.append([x_koord-1,y_koord+suund])
     return käik
-            
-        
-def ratsu_käigud(seis,ratsu_pos):
+def kuninga_käigud(seis,kuninga_pos):
+    pool=värv(kuninga_pos)
+    oma=omad(pool)
+    vastane=vaenlased(pool)
+    x , y = kuninga_pos.items()
+    suund =1
     käigud=[]
-
-    for i in range(4):
-        if i == 0:
-            if x_koord+2 <=7:
-                a='sd'
+    for j in range(2):
+        if j==1:
+            suund = -1
+        for i in range(3):
+            if x+suund >=0 and x+suund<8:
+                if y-1 >=0 and:#siit tuleks jätkata(ülevalt alt 3 käiku V-P vaadata ja siis eraldi Keskel V-P)
+                    
                 
-        
-print(üks_ratsu(algseis,[2,3]))   
+print(ratsu_käigud(algseis,[2,3]))   
