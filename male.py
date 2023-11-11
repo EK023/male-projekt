@@ -1,11 +1,11 @@
 import pygame
 
 pygame.init()
-WIDTH = 1000
-HEIGHT = 900
-scr = pygame.display.set_mode((WIDTH, HEIGHT),pygame.RESIZABLE ) #ekraani loomine, loodetavasti saab ekraani suuruse muutmise tööle
+WIDTH = 900
+HEIGHT = 850
+screen = pygame.display.set_mode((WIDTH, HEIGHT),pygame.RESIZABLE ) #ekraani loomine, loodetavasti saab ekraani suuruse muutmise tööle
 pygame.display.set_caption("Kahe mängijaga male!")
-kell = pygame.time.clock()
+kell = pygame.time.Clock()
 fps = 60
 
     
@@ -92,6 +92,20 @@ malendid = ['vanker', 'ratsu', 'oda', 'lipp', 'kuningas', 'ettur']
 #counter = 0 #ei saanud hästi aru, mis see tegema peaks, midagi checkiga seotud
 võitja = ''
 game_over = False
+
+
+
+def malelaud():
+    for i in range(32):
+        veerg = i % 4
+        rida = i // 4
+        if rida % 2 == 0:
+            pygame.draw.rect(screen, 'chartreuse4', [600 - (veerg*200), rida * 100, 100, 100])
+        else:
+            pygame.draw.rect(screen, 'chartreuse4', [700 - (veerg*200), rida * 100, 100, 100])
+        pygame.draw.rect(screen, 'gray', [0, 800, WIDTH, 50])
+        pygame.draw.rect(screen, 'gold', [0, 800, WIDTH, 50], 3)
+        pygame.draw.rect(screen, 'gold2', [800, 0, 100, HEIGHT], 3)
 
 
 '''rea_kontroll(kumb):	#kumb võtab sisendiks kas 'Veerg' või 'Rida' 
@@ -184,4 +198,17 @@ def oda_käigud(seis,oda_pos):
 print(oda_käigud(algseis,[3,3]))	
 #print(algseis[0][3-8])
 
-        
+run = True
+while run:
+    kell.tick(fps)
+    screen.fill('light yellow')
+    malelaud()
+    pygame.display.flip()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+        #elif event.type == pygame.VIDEORESIZE:
+        #    screen.blit(pygame.transform.scale(malelaud(), event.dict['size']), (0, 0))
+        #    pygame.display.update()
+
+    
