@@ -1,7 +1,12 @@
 import pygame
 
 pygame.init()
-
+WIDTH = 1000
+HEIGHT = 900
+scr = pygame.display.set_mode((WIDTH, HEIGHT),pygame.RESIZABLE ) #ekraani loomine, loodetavasti saab ekraani suuruse muutmise tööle
+pygame.display.set_caption("Kahe mängijaga male!")
+kell = pygame.time.clock()
+fps = 60
 
     
             
@@ -33,6 +38,62 @@ def värv(nupu_pos):
     else:
         värv='V'
     return värv
+
+käigu_järk = 0 #0 - valge käik; 1 - valge käik, nupp valitud; 2 - musta käik; 3 - musta käik, nupp valitud
+valik = 100  #default, käigu ajal võtab nupu väärtuse
+sobivad_käigud = []
+
+
+must_lipp = pygame.image.load('Pildid\must_lipp.png')
+must_lipp = pygame.transform.scale(must_lipp, (80,80))
+must_lipp_v = pygame.transform.scale(must_lipp, (25,25))
+must_kuningas = pygame.image.load('Pildid\must_kuningas.png')
+must_kuningas = pygame.transform.scale(must_kuningas, (80, 80))
+must_kuningas_v = pygame.transform.scale(must_kuningas, (25, 25))
+must_oda = pygame.image.load('Pildid\must_oda.png')
+must_oda = pygame.transform.scale(must_oda, (80,80))
+must_oda_v = pygame.transform.scale(must_oda, (25, 25))
+must_ratsu = pygame.image.load('Pildid\must_ratsu.png')
+must_ratsu = pygame.transform.scale(must_ratsu, (80,80))
+must_ratsu_v = pygame.transform.scale(must_ratsu, (25, 25))
+must_vanker = pygame.image.load('Pildid\must_vanker.png')
+must_vanker = pygame.transform.scale(must_vanker, (80,80))
+must_vanker_v = pygame.transform.scale(must_vanker, (25, 25))
+must_ettur = pygame.image.load('Pildid\must_ettur.png')
+must_ettur = pygame.transform.scale(must_ettur, (80,80))
+must_ettur_v = pygame.transform.scale(must_ettur, (25, 25))
+
+valge_lipp = pygame.image.load('Pildid\\valge_lipp.png')
+valge_lipp = pygame.transform.scale(valge_lipp, (80,80))
+valge_lipp_v = pygame.transform.scale(valge_lipp, (25, 25))
+valge_kuningas = pygame.image.load('Pildid\\valge_kuningas.png')
+valge_kuningas = pygame.transform.scale(valge_kuningas, (80,80))
+valge_kuningas_v = pygame.transform.scale(valge_kuningas, (25, 25))
+valge_oda = pygame.image.load('Pildid\\valge_oda.png')
+valge_oda = pygame.transform.scale(valge_oda, (80,80))
+valge_oda_v = pygame.transform.scale(valge_oda, (25, 25))
+valge_ratsu = pygame.image.load('Pildid\\valge_ratsu.png')
+valge_ratsu = pygame.transform.scale(valge_ratsu, (80,80))
+valge_ratsu_v = pygame.transform.scale(valge_ratsu, (25, 25))
+valge_vanker = pygame.image.load('Pildid\\valge_vanker.png')
+valge_vanker = pygame.transform.scale(valge_vanker, (80,80))
+valge_vanker_v = pygame.transform.scale(valge_vanker, (25, 25))
+valge_ettur = pygame.image.load('Pildid\\valge_ettur.png')
+valge_ettur = pygame.transform.scale(valge_ettur, (80,80))
+valge_ettur_v = pygame.transform.scale(valge_ettur, (25, 25))
+
+valged_pildid = [valge_vanker, valge_ratsu, valge_oda, valge_lipp, valge_kuningas, valge_ettur]
+väiksed_valged_pildid = [valge_vanker_v, valge_ratsu_v, valge_oda_v, valge_lipp_v, valge_kuningas_v, valge_ettur_v]
+mustad_pildid = [must_vanker, must_ratsu, must_oda, must_lipp, must_kuningas, must_ettur]
+väiksed_mustad_pildid = [must_vanker_v, must_ratsu_v, must_oda_v, must_lipp_v, must_kuningas_v, must_ettur_v]
+malendid = ['vanker', 'ratsu', 'oda', 'lipp', 'kuningas', 'ettur']
+
+# muutujad
+#counter = 0 #ei saanud hästi aru, mis see tegema peaks, midagi checkiga seotud
+võitja = ''
+game_over = False
+
+
 '''rea_kontroll(kumb):	#kumb võtab sisendiks kas 'Veerg' või 'Rida' 
     while i < 8:
     while i >=-8:
