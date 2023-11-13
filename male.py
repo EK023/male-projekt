@@ -14,16 +14,16 @@ fps = 60
 #ettur(pawn),vanker(rook),ratsu(horse),oda(bishop),kuningas,lipp(queen)//
 algseis= [['v','r','o','l','k','o','r','v'],
           ['e','E','e','e','e','e','e','e'],		#väikse tähega on mustad ja esitähega on eristatavad nupud
-          [' ','L',' ','r',' ',' ',' ','L'],
-          [' ',' ',' ',' ',' ',' ',' ',' '],
-          [' ',' ',' ',' ',' ',' ',' ',' '],
+          [' ','L',' ','R',' ',' ',' ','L'],
+          [' ',' ','V',' ','L',' ',' ',' '],
+          [' ',' ',' ','K','e',' ',' ',' '],
           [' ',' ',' ',' ',' ',' ',' ',' '],
           ['E','E','E','E','E','E','E','E'],		#suure tähega valged
           ['V','R','O','L','K','O','R','V']]
 valged=['V','R','O','L','K','E']
 mustad=['v','r','o','l','k','e']
-def värv(nupu_pos):		#Leiab, mis värvi nupuga tegemist on, vastavalt, kas tegemist on suure või väikse tähega
-    if algseis[nupu_pos[0]][nupu_pos[1]].islower():
+def värv(seis,nupu_pos):		#Leiab, mis värvi nupuga tegemist on, vastavalt, kas tegemist on suure või väikse tähega
+    if seis[nupu_pos[0]][nupu_pos[1]].islower():
         pool='M'
     else:
         pool='V'
@@ -39,12 +39,6 @@ def omad(pool):
     else:
         return mustad
 
-def värv(nupu_pos):
-    if algseis[nupu_pos[0]][nupu_pos[1]].islower:
-        värv='M'
-    else:
-        värv='V'
-    return värv
 
 käigu_järk = 0 #0 - valge käik; 1 - valge käik, nupp valitud; 2 - musta käik; 3 - musta käik, nupp valitud
 valik = 100  #default, käigu ajal võtab nupu väärtuse
@@ -88,7 +82,6 @@ valge_vanker_v = pygame.transform.scale(valge_vanker, (25, 25))
 valge_ettur = pygame.image.load('Pildid\\valge_ettur.png')
 valge_ettur = pygame.transform.scale(valge_ettur, (80,80))
 valge_ettur_v = pygame.transform.scale(valge_ettur, (25, 25))
-
 valged_pildid = [valge_vanker, valge_ratsu, valge_oda, valge_lipp, valge_kuningas, valge_ettur]
 väiksed_valged_pildid = [valge_vanker_v, valge_ratsu_v, valge_oda_v, valge_lipp_v, valge_kuningas_v, valge_ettur_v]
 mustad_pildid = [must_vanker, must_ratsu, must_oda, must_lipp, must_kuningas, must_ettur]
@@ -116,7 +109,7 @@ def malelaud():
 
 
 def vankri_käigud(seis,vankri_pos): 		#värvi on tegelikult võimalik leida ka nupu positsioonist(kas ta on väike või suur täht)
-    pool=värv(vankri_pos)
+    pool=värv(seis,vankri_pos)
     vastased = vaenlased(pool)
     rida, veerg=vankri_pos[0], vankri_pos[1]
     käigud=[]
@@ -159,7 +152,7 @@ def vankri_käigud(seis,vankri_pos): 		#värvi on tegelikult võimalik leida ka 
         j-=1
     return käigud
 def oda_käigud(seis,oda_pos):
-    pool=värv(oda_pos)
+    pool=värv(seis,oda_pos)
     käigud=[]
     vastased=vaenlased(pool)
     for i in range(4):
@@ -197,7 +190,7 @@ def lipu_käigud(seis,lipu_pos):
     käigud.append(vankri_käigud(seis,lipu_pos))
     return käigud
 def etturi_käigud(seis,etturi_pos):
-    pool=värv(etturi_pos)
+    pool=värv(seis,etturi_pos)
     vastased=vaenlased(pool)
     käigud=[]
     käik= []
@@ -220,7 +213,7 @@ def etturi_käigud(seis,etturi_pos):
         käigud.append([x+i,y-1])
     return käigud #Veel on vaja enpassanti ja castle-imist + käikude eemaldamist, mis avaksid tule kuningale
 def ratsu_käigud(seis,ratsu_pos): #kaks võtab koordinaadi, mille suhtes liigutakse 2 ruutu
-    pool=värv(ratsu_pos)
+    pool=värv(seis,ratsu_pos)
     x_koord, y_koord=ratsu_pos[0], ratsu_pos[1]
     oma=omad(pool)
     suund=2
@@ -240,23 +233,30 @@ def ratsu_käigud(seis,ratsu_pos): #kaks võtab koordinaadi, mille suhtes liigut
                 käik.append([x_koord-1,y_koord+suund])
     return käik
 def kuninga_käigud(seis,kuninga_pos):
-    pool=värv(kuninga_pos)
+    pool=värv(seis,kuninga_pos)
     oma=omad(pool)
     vastane=vaenlased(pool)
-    x , y = kuninga_pos.items()
+    x , y = kuninga_pos[0], kuninga_pos[1]
     suund =1
     käigud=[]
-    for j in range(2):
+    for j in range(3):
         if j==1:
             suund = -1
+        if j==2:
+            suund = 0 
         for i in range(3):
-            if x+suund >=0 and x+suund<8:
-                if y-1 >=0 and:#siit tuleks jätkata(ülevalt alt 3 käiku V-P vaadata ja siis eraldi Keskel V-P)
+            ysuund=i
+            if i== 2:
+                ysuund=-1
+            if x+suund >=0 and x+suund<8 and y+ysuund >=0 and y+ysuund <8:
+                if seis[x+suund][y+ysuund]==' ':
+                    käigud.append([x+suund,y+ysuund])
+                #if y-1 >=0 and:#siit tuleks jätkata(ülevalt alt 3 käiku V-P vaadata ja siis eraldi Keskel V-P)
+    return käigud
                     
                 
 print(ratsu_käigud(algseis,[2,3]))   
-=======
-print(oda_käigud(algseis,[3,3]))	
+print(kuninga_käigud(algseis,[4,3]))	
 #print(algseis[0][3-8])
 
 run = True
