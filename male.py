@@ -106,6 +106,9 @@ def malelaud():
         pygame.draw.rect(screen, 'gray', [0, 800, WIDTH, 50])
         pygame.draw.rect(screen, 'gold', [0, 800, WIDTH, 50], 3)
         pygame.draw.rect(screen, 'gold2', [800, 0, 100, HEIGHT], 3)
+        for i in range(9):
+            pygame.draw.line(screen, 'black', (0, 100 * i), (800, 100 * i), 2)
+            pygame.draw.line(screen, 'black', (100 * i, 0), (100 * i, 800), 2)
 
 
 def vankri_käigud(seis,vankri_pos): 		#värvi on tegelikult võimalik leida ka nupu positsioonist(kas ta on väike või suur täht)
@@ -255,9 +258,12 @@ def kuninga_käigud(seis,kuninga_pos):
     return käigud
                     
                 
-print(ratsu_käigud(algseis,[2,3]))   
-print(kuninga_käigud(algseis,[4,3]))	
+   
+#print(kuninga_käigud(algseis,[4,3]))	
 #print(algseis[0][3-8])
+#print(oda_käigud(algseis,[3,3]))	
+
+
 
 run = True
 while run:
