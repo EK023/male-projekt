@@ -119,7 +119,7 @@ def malendid():
     #malendite kuvamine lauale
 
 
-def vankri_käigud(seis,vankri_pos): 		#värvi on tegelikult võimalik leida ka nupu positsioonist(kas ta on väike või suur täht)
+def vankri_käigud(seis,vankri_pos): 		
     pool=värv(seis,vankri_pos)
     vastased = vaenlased(pool)
     rida, veerg=vankri_pos[0], vankri_pos[1]
@@ -260,14 +260,14 @@ def kuninga_käigud(seis,kuninga_pos):
             if i== 2:
                 ysuund=-1
             if x+suund >=0 and x+suund<8 and y+ysuund >=0 and y+ysuund <8:
-                if seis[x+suund][y+ysuund]==' ':
+                if seis[x+suund][y+ysuund] not in oma:
                     käigud.append([x+suund,y+ysuund])
                 #if y-1 >=0 and:#siit tuleks jätkata(ülevalt alt 3 käiku V-P vaadata ja siis eraldi Keskel V-P)
     return käigud
                     
                 
    
-#print(kuninga_käigud(algseis,[4,3]))	
+print(kuninga_käigud(algseis,[4,3]))	
 #print(algseis[0][3-8])
 #print(oda_käigud(algseis,[3,3]))	
 
