@@ -62,7 +62,7 @@ must_vanker = pygame.image.load('Pildid\must_vanker.png')
 must_vanker = pygame.transform.scale(must_vanker, (60,60))
 must_vanker_v = pygame.transform.scale(must_vanker, (25, 25))
 must_ettur = pygame.image.load('Pildid\must_ettur.png')
-must_ettur = pygame.transform.scale(must_ettur, (60,60))
+must_ettur = pygame.transform.scale(must_ettur, (50,50))
 must_ettur_v = pygame.transform.scale(must_ettur, (25, 25))
 
 valge_lipp = pygame.image.load('Pildid\\valge_lipp.png')
@@ -81,7 +81,7 @@ valge_vanker = pygame.image.load('Pildid\\valge_vanker.png')
 valge_vanker = pygame.transform.scale(valge_vanker, (60,60))
 valge_vanker_v = pygame.transform.scale(valge_vanker, (25, 25))
 valge_ettur = pygame.image.load('Pildid\\valge_ettur.png')
-valge_ettur = pygame.transform.scale(valge_ettur, (60,60))
+valge_ettur = pygame.transform.scale(valge_ettur, (50,50))
 valge_ettur_v = pygame.transform.scale(valge_ettur, (25, 25))
 valged_pildid = [valge_vanker, valge_ratsu, valge_oda, valge_lipp, valge_kuningas, valge_ettur]
 väiksed_valged_pildid = [valge_vanker_v, valge_ratsu_v, valge_oda_v, valge_lipp_v, valge_kuningas_v, valge_ettur_v]
@@ -116,7 +116,20 @@ def malelaud():
     screen.blit(kesk_font.render('Forfeit', True, 'black'), (640, 615))
 
 def malendid():
-    #malendite kuvamine lauale
+    for y in range(len(algseis)):
+        for x in range(len(algseis[y])):
+            if algseis[y][x] in valged:
+                i = valged.index(algseis[y][x])
+                if i == 5:
+                    screen.blit(valged_pildid[i], (15 + (x * 75), 65 + (y * 75)))
+                else:
+                    screen.blit(valged_pildid[i], (10 + (x * 75), 60 + (y * 75)))
+            elif algseis[y][x] in mustad:
+                i = mustad.index(algseis[y][x])
+                if i == 5:
+                    screen.blit(mustad_pildid[i], (15 + (x * 75), 65 + (y * 75)))
+                else:
+                    screen.blit(mustad_pildid[i], (10 + (x * 75), 60 + (y * 75)))
 
 
 def vankri_käigud(seis,vankri_pos): 		
@@ -278,6 +291,7 @@ while run:
     kell.tick(fps)
     screen.fill('light yellow')
     malelaud()
+    malendid()
     pygame.display.flip()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
