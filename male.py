@@ -15,10 +15,10 @@ kesk_font = pygame.font.Font(pygame.font.get_default_font(), 20)
 #ettur(pawn),vanker(rook),ratsu(horse),oda(bishop),kuningas,lipp(queen)//
 algseis= [['v','r','o','l','k','o','r','v'],
           ['e','E','e','e','e','e','e','e'],		#väikse tähega on mustad ja esitähega on eristatavad nupud
-          [' ','L',' ','R',' ',' ',' ','L'],
-          [' ',' ','V',' ','L',' ',' ',' '],
-          [' ',' ',' ','K','e',' ',' ',' '],
-          [' ',' ',' ',' ',' ',' ',' ',' '],
+          [' ',' ',' ','R',' ',' ',' ','L'],
+          ['L',' ','V',' ','L',' ','k',' '],
+          [' ',' ',' ',' ','e',' ',' ',' '],
+          [' ','K',' ',' ',' ',' ',' ',' '],
           ['E','E','E','E','E','E','E','E'],		#suure tähega valged
           ['V','R','O','L','K','O','R','V']]
 valged=['V','R','O','L','K','E']
@@ -39,6 +39,11 @@ def omad(pool):
         return valged
     else:
         return mustad
+def tule_kontroll(nupp,kas_tuli):
+    if nupp.lower()=='k' or kas_tuli:
+        return True
+    else:
+        return False
 
 
 käigu_järk = 0 #0 - valge käik; 1 - valge käik, nupp valitud; 2 - musta käik; 3 - musta käik, nupp valitud
@@ -137,9 +142,11 @@ def vankri_käigud(seis,vankri_pos):
     vastased = vaenlased(pool)
     rida, veerg=vankri_pos[0], vankri_pos[1]
     käigud=[]
+    tuli=False
     for i in range(rida+1,8):	#paremale käigud
         if seis[i][veerg] in vastased:
             käigud.append([i,veerg])
+            tuli=tule_kontroll(seis[i][veerg],tuli)
             break
         elif seis[i][veerg] == ' ':
             käigud.append([i,veerg])
@@ -150,6 +157,7 @@ def vankri_käigud(seis,vankri_pos):
     while i >= -8:			#Vasakule käigud
         if seis[i][veerg] in vastased:
             käigud.append([i+8,veerg])
+            tuli=tule_kontroll(seis[i][veerg],tuli)
             break
         elif seis[i][veerg] == ' ':
             käigud.append([i+8,veerg])
@@ -159,6 +167,7 @@ def vankri_käigud(seis,vankri_pos):
     for j in range(veerg+1,8):	#alla käigud
         if seis[rida][j] in vastased:
             käigud.append([rida,j])
+            tuli=tule_kontroll(seis[rida][j],tuli)
             break
         elif seis[rida][j] == ' ':
             käigud.append([rida,j])
@@ -168,17 +177,19 @@ def vankri_käigud(seis,vankri_pos):
     while j >= -8:		#üles käigud
         if seis[rida][j] in vastased:
             käigud.append([rida,j+8])
+            tuli=tule_kontroll(seis[rida][j],tuli)
             break
         elif seis[rida][j] == ' ':
             käigud.append([rida,j+8])
         else:
             break
         j-=1
-    return käigud
+    return käigud, tuli
 def oda_käigud(seis,oda_pos):
     pool=värv(seis,oda_pos)
     käigud=[]
     vastased=vaenlased(pool)
+    tuli=False
     for i in range(4):
         võimalik= True
         kordaja=1
@@ -201,23 +212,30 @@ def oda_käigud(seis,oda_pos):
                 võimalik =False		#Vaatab, kas koordinaadid jäävad laua suuruse sisse
             elif seis[x_koord][y_koord] == ' ' or seis[x_koord][y_koord] in vastased:
                 käigud.append([x_koord,y_koord])
-                if seis[x_koord][y_koord] in vastased:
-                    võimalik = False	#Vastaseni jõudes väljume tsüklist, aga käigu paneme enne kirja
                 kordaja+=1
+                if seis[x_koord][y_koord] in vastased:
+                    tuli=tule_kontroll(seis[x_koord][y_koord],tuli)
+                    võimalik = False	#Vastaseni jõudes väljume tsüklist, aga käigu paneme enne kirja
             else:
                 võimalik=False
-    return käigud
+            
+    return käigud, tuli
 
 def lipu_käigud(seis,lipu_pos):
     käigud=[]		#lipu käigud koosnevad oda ja vankri käikudest, seega saab eelnevaid fun kasutada
-    käigud.append(oda_käigud(seis,lipu_pos))
-    käigud.append(vankri_käigud(seis,lipu_pos))
-    return käigud
+    tuli=False
+    käik_o, tuli_o=oda_käigud(seis,lipu_pos)
+    käik_v, tuli_v=vankri_käigud(seis,lipu_pos)
+    käigud=käik_o+käik_v
+    if tuli_o or tuli_v:
+        tuli=True 
+    return käigud, tuli
 def etturi_käigud(seis,etturi_pos):
     pool=värv(seis,etturi_pos)
     vastased=vaenlased(pool)
     käigud=[]
     käik= []
+    tuli=False 
     x, y=etturi_pos[0], etturi_pos[1]
     if pool == 'V':
         i=-1
@@ -233,29 +251,35 @@ def etturi_käigud(seis,etturi_pos):
             käigud.append(käik)
     if seis[x+i][y+1] in vastased and y+1 <=7: 		#Kas on võimalik võtta diagonaalis võtta
         käigud.append([x+i,y+1])
+        tuli=tule_kontroll(seis[x+i][y+1],tuli)
     if seis[x+i][y-1] in vastased and y-1 >=0:
         käigud.append([x+i,y-1])
-    return käigud #Veel on vaja enpassanti ja castle-imist + käikude eemaldamist, mis avaksid tule kuningale
+        tuli=tule_kontroll(seis[x+i][y+1],tuli)
+    return käigud, tuli #Veel on vaja enpassanti ja castle-imist + käikude eemaldamist, mis avaksid tule kuningale
 def ratsu_käigud(seis,ratsu_pos): #kaks võtab koordinaadi, mille suhtes liigutakse 2 ruutu
     pool=värv(seis,ratsu_pos)
     x_koord, y_koord=ratsu_pos[0], ratsu_pos[1]
     oma=omad(pool)
+    vastased=vaenlased(pool)
     suund=2
     käik=[]
+    tuli=False
     for i in range(2):
         if i==1:		#alguses otsib käigud, mis jäävad alla ja paremale
             suund=-2	#Siin otsib ülejäänud suunda jäävad käigud
-        if x_koord+suund<8 and x_koord+suund >=0:		#2 käiku x-teljel 
-            if y_koord+1<8 and seis[x_koord+suund][y_koord+1] not in oma:
-                käik.append([x_koord+suund,y_koord+1])
-            if y_koord-1>=0 and seis[x_koord+suund][y_koord-1] not in oma:
-                käik.append([x_koord+suund,y_koord-1])
+        if x_koord+suund<8 and x_koord+suund >=0:		#2 käiku x-teljel
+            for k in range(-1,2,2):
+                if y_koord+k<8 and seis[x_koord+suund][y_koord+k] not in oma:
+                    käik.append([x_koord+suund,y_koord+k])
+                    if seis[x_koord+suund][y_koord+k] in vastased:
+                        tuli=tule_kontroll(seis[x_koord+suund][y_koord+k],tuli)
         if y_koord+suund<8 and y_koord+suund >=0:		#2 käiku y-teljel
-            if x_koord+1<8 and seis[x_koord+1][y_koord+suund] not in oma:
-                käik.append([x_koord+1,y_koord+suund])
-            if x_koord-1<8 and seis[x_koord-1][y_koord+suund] not in oma:
-                käik.append([x_koord-1,y_koord+suund])
-    return käik
+            for j in range(-1,2,2):
+                if x_koord+j<8 and seis[x_koord+j][y_koord+suund] not in oma:
+                    käik.append([x_koord+j,y_koord+suund])
+                    if seis[x_koord+j][y_koord+suund] in vastased:
+                        tuli=tule_kontroll(seis[x_koord+j][y_koord+suund],tuli)
+    return käik, tuli
 def kuninga_käigud(seis,kuninga_pos):
     pool=värv(seis,kuninga_pos)
     oma=omad(pool)
@@ -275,15 +299,23 @@ def kuninga_käigud(seis,kuninga_pos):
             if x+suund >=0 and x+suund<8 and y+ysuund >=0 and y+ysuund <8:
                 if seis[x+suund][y+ysuund] not in oma:
                     käigud.append([x+suund,y+ysuund])
-                #if y-1 >=0 and:#siit tuleks jätkata(ülevalt alt 3 käiku V-P vaadata ja siis eraldi Keskel V-P)
     return käigud
-                    
+def võimalikud_käigud(seis, kuningas): #kuningas võtab väärtuseks kas suure K või väikse
+    x=0
+    for el in algseis:			#Leiame kuninga asukoha
+        try:
+            y=el.index(kuningas)
+            break 
+        except :
+            x+=1
+    kuninga_pos=[x,y]
+    
                 
    
-print(kuninga_käigud(algseis,[4,3]))	
+#print(kuninga_käigud(algseis,[4,3]))	
 #print(algseis[0][3-8])
-#print(oda_käigud(algseis,[3,3]))	
-
+#print(lipu_käigud(algseis,[3,0]))	
+print(ratsu_käigud(algseis,[2,3]))
 
 
 run = True
