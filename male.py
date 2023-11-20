@@ -50,44 +50,51 @@ käigu_järk = 0 #0 - valge käik; 1 - valge käik, nupp valitud; 2 - musta käi
 valik = 100  #default, käigu ajal võtab nupu väärtuse
 sobivad_käigud = []
 
-
-must_lipp = pygame.image.load('Pildid\must_lipp.png')
-must_lipp = pygame.transform.scale(must_lipp, (60,60))
+def pildi_laadimine(pilt):
+    suurus=(60,60)		#siit on võimalik seda suurust muuta, võib ka täitsa algusesse tõsta
+    v_pilt = pygame.image.load(pilt)
+    v_pilt = pygame.transform.scale(v_pilt, suurus)
+    return v_pilt
+must_lipp= pildi_laadimine('Pildid\must_lipp.png')
+#must_lipp = pygame.image.load('Pildid\must_lipp.png')
+#must_lipp = pygame.transform.scale(must_lipp, (60,60))
 must_lipp_v = pygame.transform.scale(must_lipp, (25,25))
-must_kuningas = pygame.image.load('Pildid\must_kuningas.png')
-must_kuningas = pygame.transform.scale(must_kuningas, (60, 60))
+
+must_kuningas = pildi_laadimine('Pildid\must_kuningas.png')
 must_kuningas_v = pygame.transform.scale(must_kuningas, (25, 25))
-must_oda = pygame.image.load('Pildid\must_oda.png')
-must_oda = pygame.transform.scale(must_oda, (60,60))
+
+must_oda = pildi_laadimine('Pildid\must_oda.png')
 must_oda_v = pygame.transform.scale(must_oda, (25, 25))
-must_ratsu = pygame.image.load('Pildid\must_ratsu.png')
-must_ratsu = pygame.transform.scale(must_ratsu, (60,60))
+
+must_ratsu = pildi_laadimine('Pildid\must_ratsu.png')
 must_ratsu_v = pygame.transform.scale(must_ratsu, (25, 25))
-must_vanker = pygame.image.load('Pildid\must_vanker.png')
-must_vanker = pygame.transform.scale(must_vanker, (60,60))
+
+must_vanker = pildi_laadimine('Pildid\must_vanker.png')
 must_vanker_v = pygame.transform.scale(must_vanker, (25, 25))
-must_ettur = pygame.image.load('Pildid\must_ettur.png')
-must_ettur = pygame.transform.scale(must_ettur, (50,50))
+
+must_ettur = pygame.image.load('Pildid\must_ettur1.png')	#Ma muutsin seda pilti natukene, vaata kas nii näeb see sinu arvates ok välja, siis on võimalik kõik nupud ühe suuruselt laadida
+must_ettur = pygame.transform.scale(must_ettur, (60,60))
 must_ettur_v = pygame.transform.scale(must_ettur, (25, 25))
 
-valge_lipp = pygame.image.load('Pildid\\valge_lipp.png')
-valge_lipp = pygame.transform.scale(valge_lipp, (60,60))
+valge_lipp = pildi_laadimine('Pildid\\valge_lipp.png')
 valge_lipp_v = pygame.transform.scale(valge_lipp, (25, 25))
-valge_kuningas = pygame.image.load('Pildid\\valge_kuningas.png')
-valge_kuningas = pygame.transform.scale(valge_kuningas, (60,60))
+
+valge_kuningas = pildi_laadimine('Pildid\\valge_kuningas.png')
 valge_kuningas_v = pygame.transform.scale(valge_kuningas, (25, 25))
-valge_oda = pygame.image.load('Pildid\\valge_oda.png')
-valge_oda = pygame.transform.scale(valge_oda, (60,60))
+
+valge_oda = pildi_laadimine('Pildid\\valge_oda.png')
 valge_oda_v = pygame.transform.scale(valge_oda, (25, 25))
-valge_ratsu = pygame.image.load('Pildid\\valge_ratsu.png')
-valge_ratsu = pygame.transform.scale(valge_ratsu, (60,60))
+
+valge_ratsu = pildi_laadimine('Pildid\\valge_ratsu.png')
 valge_ratsu_v = pygame.transform.scale(valge_ratsu, (25, 25))
-valge_vanker = pygame.image.load('Pildid\\valge_vanker.png')
-valge_vanker = pygame.transform.scale(valge_vanker, (60,60))
+
+valge_vanker = pildi_laadimine('Pildid\\valge_vanker.png')
 valge_vanker_v = pygame.transform.scale(valge_vanker, (25, 25))
+
 valge_ettur = pygame.image.load('Pildid\\valge_ettur.png')
 valge_ettur = pygame.transform.scale(valge_ettur, (50,50))
 valge_ettur_v = pygame.transform.scale(valge_ettur, (25, 25))
+
 valged_pildid = [valge_vanker, valge_ratsu, valge_oda, valge_lipp, valge_kuningas, valge_ettur]
 väiksed_valged_pildid = [valge_vanker_v, valge_ratsu_v, valge_oda_v, valge_lipp_v, valge_kuningas_v, valge_ettur_v]
 mustad_pildid = [must_vanker, must_ratsu, must_oda, must_lipp, must_kuningas, must_ettur]
@@ -325,9 +332,16 @@ while run:
     malelaud()
     malendid()
     pygame.display.flip()
+    muudetav_suurus=75			#muudetav suurus oleks ühe malelaua ruudu suurus
+    ülemise_kasti_suurus=50
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not game_over:
+            x = event.pos[0] // muudetav_suurus		# leiab x ja y koordinaadi
+            y = (event.pos[1]- ülemise_kasti_suurus) // muudetav_suurus #kuna üleval on teksti kast, siis see suurus on vaja maha lahutada
+            nupu_koord=[x,y]
+            
         #elif event.type == pygame.VIDEORESIZE:
         #    screen.blit(pygame.transform.scale(malelaud(), event.dict['size']), (0, 0))
         #    pygame.display.update()
