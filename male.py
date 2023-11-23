@@ -7,6 +7,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT),pygame.RESIZABLE ) #ekraani loo
 suurus = pygame.display.get_window_size()
 kordaja_x = suurus[0]/WIDTH
 kordaja_y = suurus[1]/HEIGHT
+v_kordaja = min(kordaja_x, kordaja_y)
 pygame.display.set_caption("Kahe mängijaga male!")
 kell = pygame.time.Clock()
 fps = 60
@@ -142,7 +143,7 @@ def malendid():
             elif algseis[y][x] in mustad:
                 i = mustad.index(algseis[y][x])
                 if i == 5:
-                    screen.blit(mustad_pildid[i], (15 + (x * 75), 65 + (y * 75)))
+                    screen.blit(mustad_pildid[i], (15 + (x * 75), 60 + (y * 75)))
                 else:
                     screen.blit(mustad_pildid[i], (10 + (x * 75), 60 + (y * 75)))
 
@@ -344,6 +345,7 @@ while run:
             x = event.pos[0] // muudetav_suurus		# leiab x ja y koordinaadi
             y = (event.pos[1]- ülemise_kasti_suurus) // muudetav_suurus #kuna üleval on teksti kast, siis see suurus on vaja maha lahutada
             nupu_koord=[x,y]
+            
             
         elif event.type == pygame.VIDEORESIZE:
             suurus = pygame.display.get_window_size()
