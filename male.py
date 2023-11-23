@@ -17,11 +17,11 @@ kesk_font = pygame.font.Font(pygame.font.get_default_font(), 20)
 #Castle-imise ja en passanti jaoks oleks vist vaja käike meeles pidada
 #ettur(pawn),vanker(rook),ratsu(horse),oda(bishop),kuningas,lipp(queen)//
 algseis= [['v','r','o','l','k','o','r','v'],
-          ['e','E','e','e','e','e','e','e'],		#väikse tähega on mustad ja esitähega on eristatavad nupud
-          [' ',' ',' ','R',' ',' ',' ','L'],
-          ['L',' ','V',' ','L',' ','k',' '],
-          [' ',' ',' ',' ','e',' ',' ',' '],
-          [' ','K',' ',' ',' ',' ',' ',' '],
+          ['e','e','e','e','e','e','e','e'],		#väikse tähega on mustad ja esitähega on eristatavad nupud
+          [' ',' ',' ',' ',' ',' ',' ',' '],
+          [' ',' ',' ',' ',' ',' ','k',' '],
+          [' ',' ',' ',' ',' ',' ',' ',' '],
+          [' ',' ',' ',' ',' ',' ',' ',' '],
           ['E','E','E','E','E','E','E','E'],		#suure tähega valged
           ['V','R','O','L','K','O','R','V']]
 valged=['V','R','O','L','K','E']
@@ -331,11 +331,6 @@ def nupu_käigud(seis, nupu_pos):
         käigud= vankri_käigud(seis, nupu_pos)
     elif seis[x][y].lower()== 'e':
         käigud=etturi_käigud(seis, nupu_pos)
-    for el in käigud[0]:
-        ring=pygame.image.load('Pildid\\must_ettur.png')
-        ring = pygame.transform.scale(ring, (50,50))
-        pygame.draw.circle(screen, 'red', (15 + (el[0] * 75), 65 + (el[1] * 75)), 5)
-        screen.blit(ring,(15 + (el[0] * 75), 65 + (el[1] * 75)))
     return käigud
    
 #print(kuninga_käigud(algseis,[4,3]))	
@@ -350,7 +345,7 @@ while run:
     screen.fill('light yellow')
     malelaud()
     malendid()
-    pygame.display.flip()
+    pygame.display.flip() #Hetkel on jama see, et kogu mäng on 30 fps-i ja nupu valikud ilmuvad ainult korraks
     muudetav_suurus=75			#muudetav suurus oleks ühe malelaua ruudu suurus
     ülemise_kasti_suurus=50
     for event in pygame.event.get():
@@ -360,9 +355,17 @@ while run:
             x = (event.pos[1]- ülemise_kasti_suurus) // muudetav_suurus #kuna üleval on teksti kast, siis see suurus on vaja maha lahutada
             y = event.pos[0] // muudetav_suurus 		# leiab x ja y koordinaadi
             if x<8 and y< 8:
-                print(nupu_käigud(algseis,[x,y]))
-            
-            
+                if algseis[x][y] != ' ':
+                    käigud=nupu_käigud(algseis,[x,y])
+                    for el in käigud[0]:
+                        y_koord, x_koord= el
+                        ring=pygame.image.load('Pildid\\ring.png')
+                        ring = pygame.transform.scale(ring, (40,40))
+                        #pygame.draw.circle(screen, (255,0,0), (15 + (x_koord * 75), 65 + (y_koord * 75)), 5)
+                        if x_koord<8 and y_koord<8 and x_koord>=0 and y_koord>=0:
+                            screen.blit(ring,(20+ (x_koord * 75), 70 + (y_koord * 75)))
+                            pygame.display.update()
+                            
         elif event.type == pygame.VIDEORESIZE:
             suurus = pygame.display.get_window_size()
             kordaja_x = suurus[0]/WIDTH
