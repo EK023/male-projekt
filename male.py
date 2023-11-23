@@ -45,7 +45,6 @@ def tule_kontroll(nupp,kas_tuli):
     else:
         return False
 
-
 käigu_järk = 0 #0 - valge käik; 1 - valge käik, nupp valitud; 2 - musta käik; 3 - musta käik, nupp valitud
 valik = 100  #default, käigu ajal võtab nupu väärtuse
 sobivad_käigud = []
@@ -55,24 +54,24 @@ def pildi_laadimine(pilt):
     v_pilt = pygame.image.load(pilt)
     v_pilt = pygame.transform.scale(v_pilt, suurus)
     return v_pilt
-must_lipp= pildi_laadimine('Pildid\must_lipp.png')
+must_lipp= pildi_laadimine('Pildid\\must_lipp.png')
 #must_lipp = pygame.image.load('Pildid\must_lipp.png')
 #must_lipp = pygame.transform.scale(must_lipp, (60,60))
 must_lipp_v = pygame.transform.scale(must_lipp, (25,25))
 
-must_kuningas = pildi_laadimine('Pildid\must_kuningas.png')
+must_kuningas = pildi_laadimine('Pildid\\must_kuningas.png')
 must_kuningas_v = pygame.transform.scale(must_kuningas, (25, 25))
 
-must_oda = pildi_laadimine('Pildid\must_oda.png')
+must_oda = pildi_laadimine('Pildid\\must_oda.png')
 must_oda_v = pygame.transform.scale(must_oda, (25, 25))
 
-must_ratsu = pildi_laadimine('Pildid\must_ratsu.png')
+must_ratsu = pildi_laadimine('Pildid\\must_ratsu.png')
 must_ratsu_v = pygame.transform.scale(must_ratsu, (25, 25))
 
-must_vanker = pildi_laadimine('Pildid\must_vanker.png')
+must_vanker = pildi_laadimine('Pildid\\must_vanker.png')
 must_vanker_v = pygame.transform.scale(must_vanker, (25, 25))
 
-must_ettur = pygame.image.load('Pildid\must_ettur1.png')	#Ma muutsin seda pilti natukene, vaata kas nii näeb see sinu arvates ok välja, siis on võimalik kõik nupud ühe suuruselt laadida
+must_ettur = pygame.image.load('Pildid\\must_ettur1.png')	#Ma muutsin seda pilti natukene, vaata kas nii näeb see sinu arvates ok välja, siis on võimalik kõik nupud ühe suuruselt laadida
 must_ettur = pygame.transform.scale(must_ettur, (60,60))
 must_ettur_v = pygame.transform.scale(must_ettur, (25, 25))
 
@@ -252,17 +251,22 @@ def etturi_käigud(seis,etturi_pos):
         i=1
         if etturi_pos[0]==1:
             käik=[3,y]
-    if seis[x+1][y]==' ':		#Kas on võimalik edasi liikuda
+    if seis[x+i][y]==' ':		#Kas on võimalik edasi liikuda
         käigud.append([x+i,y])
-        if käik!=[] and seis[käik[0]][käik[1]]:	#kontrollib, kas topeltkäik on võimalik
+        if käik!=[] and seis[käik[0]][käik[1]] == ' ':	#kontrollib, kas topeltkäik on võimalik
             käigud.append(käik)
-    if seis[x+i][y+1] in vastased and y+1 <=7: 		#Kas on võimalik võtta diagonaalis võtta
-        käigud.append([x+i,y+1])
-        tuli=tule_kontroll(seis[x+i][y+1],tuli)
-    if seis[x+i][y-1] in vastased and y-1 >=0:
-        käigud.append([x+i,y-1])
-        tuli=tule_kontroll(seis[x+i][y+1],tuli)
-    return käigud, tuli #Veel on vaja enpassanti ja castle-imist + käikude eemaldamist, mis avaksid tule kuningale
+    try:
+        if seis[x+i][y+1] in vastased and y+1 <=7: 		#Kas on võimalik võtta diagonaalis võtta
+            käigud.append([x+i,y+1])
+            tuli=tule_kontroll(seis[x+i][y+1],tuli)
+    finally: 
+        try:
+            if seis[x+i][y-1] in vastased and y-1 >=0:
+                käigud.append([x+i,y-1])
+                tuli=tule_kontroll(seis[x+i][y+1],tuli)
+        finally:
+            return käigud, tuli #Veel on vaja enpassanti ja castle-imist + käikude eemaldamist, mis avaksid tule kuningale
+
 def ratsu_käigud(seis,ratsu_pos): #kaks võtab koordinaadi, mille suhtes liigutakse 2 ruutu
     pool=värv(seis,ratsu_pos)
     x_koord, y_koord=ratsu_pos[0], ratsu_pos[1]
@@ -307,22 +311,34 @@ def kuninga_käigud(seis,kuninga_pos):
                 if seis[x+suund][y+ysuund] not in oma:
                     käigud.append([x+suund,y+ysuund])
     return käigud
-def võimalikud_käigud(seis, kuningas): #kuningas võtab väärtuseks kas suure K või väikse
-    x=0
-    for el in algseis:			#Leiame kuninga asukoha
-        try:
-            y=el.index(kuningas)
-            break 
-        except :
-            x+=1
-    kuninga_pos=[x,y]
-    
-                
+
+def nupu_käigud(seis, nupu_pos):
+    x,y =nupu_pos
+    käigud=[]
+    if seis[x][y].lower()== 'k':
+        käigud=kuninga_käigud(seis, nupu_pos)
+        käigud=(käigud,'midagi hästi tarka') # Teiste nuppude puhul on liskas tule asi
+    elif seis[x][y].lower()== 'l':
+        käigud=lipu_käigud(seis, nupu_pos)
+    elif seis[x][y].lower()== 'o':
+        käigud=oda_käigud(seis, nupu_pos)
+    elif seis[x][y].lower()== 'r':
+        käigud=ratsu_käigud(seis, nupu_pos)
+    elif seis[x][y].lower()== 'v':
+        käigud= vankri_käigud(seis, nupu_pos)
+    elif seis[x][y].lower()== 'e':
+        käigud=etturi_käigud(seis, nupu_pos)
+    for el in käigud[0]:
+        ring=pygame.image.load('Pildid\\must_ettur.png')
+        ring = pygame.transform.scale(ring, (50,50))
+        pygame.draw.circle(screen, 'red', (15 + (el[0] * 75), 65 + (el[1] * 75)), 5)
+        screen.blit(ring,(15 + (el[0] * 75), 65 + (el[1] * 75)))
+    return käigud
    
 #print(kuninga_käigud(algseis,[4,3]))	
 #print(algseis[0][3-8])
 #print(lipu_käigud(algseis,[3,0]))	
-print(ratsu_käigud(algseis,[2,3]))
+#print(nupu_käigud(algseis,[2,3]))
 
 
 run = True
@@ -338,13 +354,16 @@ while run:
         if event.type == pygame.QUIT:
             run = False
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not game_over:
-            x = event.pos[0] // muudetav_suurus		# leiab x ja y koordinaadi
-            y = (event.pos[1]- ülemise_kasti_suurus) // muudetav_suurus #kuna üleval on teksti kast, siis see suurus on vaja maha lahutada
-            nupu_koord=[x,y]
+            x = (event.pos[1]- ülemise_kasti_suurus) // muudetav_suurus #kuna üleval on teksti kast, siis see suurus on vaja maha lahutada
+            y = event.pos[0] // muudetav_suurus 		# leiab x ja y koordinaadi
+            if x<8 and y< 8:
+                print(nupu_käigud(algseis,[x,y]))
+            
             
         #elif event.type == pygame.VIDEORESIZE:
         #    screen.blit(pygame.transform.scale(malelaud(), event.dict['size']), (0, 0))
         #    pygame.display.update()
+pygame.quit()
 
     
 
