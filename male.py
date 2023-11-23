@@ -4,6 +4,9 @@ pygame.init()
 WIDTH = 750
 HEIGHT = 650
 screen = pygame.display.set_mode((WIDTH, HEIGHT),pygame.RESIZABLE ) #ekraani loomine, loodetavasti saab ekraani suuruse muutmise tööle
+suurus = pygame.display.get_window_size()
+kordaja_x = suurus[0]/WIDTH
+kordaja_y = suurus[1]/HEIGHT
 pygame.display.set_caption("Kahe mängijaga male!")
 kell = pygame.time.Clock()
 fps = 60
@@ -342,7 +345,11 @@ while run:
             y = (event.pos[1]- ülemise_kasti_suurus) // muudetav_suurus #kuna üleval on teksti kast, siis see suurus on vaja maha lahutada
             nupu_koord=[x,y]
             
-        #elif event.type == pygame.VIDEORESIZE:
+        elif event.type == pygame.VIDEORESIZE:
+            suurus = pygame.display.get_window_size()
+            kordaja_x = suurus[0]/WIDTH
+            kordaja_y = suurus[1]/HEIGHT
+            
         #    screen.blit(pygame.transform.scale(malelaud(), event.dict['size']), (0, 0))
         #    pygame.display.update()
 
