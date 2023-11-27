@@ -3,10 +3,7 @@ import pygame
 pygame.init()
 WIDTH = 750
 HEIGHT = 650
-screen = pygame.display.set_mode((WIDTH, HEIGHT),pygame.RESIZABLE ) #ekraani loomine, loodetavasti saab ekraani suuruse muutmise tööle
-suurus = pygame.display.get_window_size()
-kordaja_x = suurus[0]/WIDTH
-kordaja_y = suurus[1]/HEIGHT
+screen = pygame.display.set_mode((WIDTH, HEIGHT),pygame.RESIZABLE) #ekraani loomine
 pygame.display.set_caption("Kahe mängijaga male!")
 kell = pygame.time.Clock()
 fps = 60
@@ -52,51 +49,63 @@ käigu_järk = 0 #0 - valge käik; 1 - valge käik, nupp valitud; 2 - musta käi
 valik = 100  #default, käigu ajal võtab nupu väärtuse
 sobivad_käigud = []
 
-def pildi_laadimine(pilt):
-    suurus=(60,60)		#siit on võimalik seda suurust muuta, võib ka täitsa algusesse tõsta
-    v_pilt = pygame.image.load(pilt)
-    v_pilt = pygame.transform.scale(v_pilt, suurus)
-    return v_pilt
-must_lipp= pildi_laadimine('Pildid\\must_lipp.png')
-#must_lipp = pygame.image.load('Pildid\must_lipp.png')
-#must_lipp = pygame.transform.scale(must_lipp, (60,60))
-must_lipp_v = pygame.transform.scale(must_lipp, (25,25))
+def vähim_kordaja():  #akna suuruse muutmise kordaja
+    suurus = pygame.display.get_window_size()
+    kordaja_x = suurus[0]/WIDTH
+    kordaja_y = suurus[1]/HEIGHT
+    return min(kordaja_x, kordaja_y)
 
-must_kuningas = pildi_laadimine('Pildid\\must_kuningas.png')
-must_kuningas_v = pygame.transform.scale(must_kuningas, (25, 25))
+def pildi_laadimine(pilt, k):  #k - kordaja, võimaldab muuta piltide suurust koos aknaga, tagastab nii väikse kui suure pildi
+    suurus=(60*k,60*k)	#siit on võimalik seda suurust muuta, võib ka täitsa algusesse tõsta
+    v_suurus = (25*k, 25*k)
+    l_pilt = pygame.image.load(pilt)  # load
+    s_pilt = pygame.transform.scale(l_pilt, suurus)  #suur
+    v_pilt = pygame.transform.scale(s_pilt, v_suurus)  #väike
+    return s_pilt, v_pilt
 
-must_oda = pildi_laadimine('Pildid\\must_oda.png')
-must_oda_v = pygame.transform.scale(must_oda, (25, 25))
+def pildid():
+    k = vähim_kordaja()
+    global must_lipp, must_lipp_v
+    must_lipp, must_lipp_v= pildi_laadimine('Pildid\\must_lipp.png', k)
 
-must_ratsu = pildi_laadimine('Pildid\\must_ratsu.png')
-must_ratsu_v = pygame.transform.scale(must_ratsu, (25, 25))
+    global must_kuningas, must_kuningas_v
+    must_kuningas, must_kuningas_v = pildi_laadimine('Pildid\\must_kuningas.png', k)
 
-must_vanker = pildi_laadimine('Pildid\\must_vanker.png')
-must_vanker_v = pygame.transform.scale(must_vanker, (25, 25))
+    global must_oda, must_oda_v
+    must_oda, must_oda_v = pildi_laadimine('Pildid\\must_oda.png', k)
 
-must_ettur = pygame.image.load('Pildid\\must_ettur1.png')	#Ma muutsin seda pilti natukene, vaata kas nii näeb see sinu arvates ok välja, siis on võimalik kõik nupud ühe suuruselt laadida
-must_ettur = pygame.transform.scale(must_ettur, (60,60))
-must_ettur_v = pygame.transform.scale(must_ettur, (25, 25))
+    global must_ratsu, must_ratsu_v
+    must_ratsu, must_ratsu_v = pildi_laadimine('Pildid\\must_ratsu.png', k)
 
-valge_lipp = pildi_laadimine('Pildid\\valge_lipp.png')
-valge_lipp_v = pygame.transform.scale(valge_lipp, (25, 25))
+    global must_vanker, must_vanker_v
+    must_vanker, must_vanker_v = pildi_laadimine('Pildid\\must_vanker.png', k)
 
-valge_kuningas = pildi_laadimine('Pildid\\valge_kuningas.png')
-valge_kuningas_v = pygame.transform.scale(valge_kuningas, (25, 25))
+    global must_ettur, must_ettur_v
+    must_ettur = pygame.image.load('Pildid\\must_ettur.png')	#Ma muutsin seda pilti natukene, vaata kas nii näeb see sinu arvates ok välja, siis on võimalik kõik nupud ühe suuruselt laadida
+    must_ettur = pygame.transform.scale(must_ettur, (50*k,50*k))
+    must_ettur_v = pygame.transform.scale(must_ettur, (25*k, 25*k))
 
-valge_oda = pildi_laadimine('Pildid\\valge_oda.png')
-valge_oda_v = pygame.transform.scale(valge_oda, (25, 25))
+    global valge_lipp, valge_lipp_v
+    valge_lipp, valge_lipp_v = pildi_laadimine('Pildid\\valge_lipp.png', k)
 
-valge_ratsu = pildi_laadimine('Pildid\\valge_ratsu.png')
-valge_ratsu_v = pygame.transform.scale(valge_ratsu, (25, 25))
+    global valge_kuningas, valge_kuningas_v
+    valge_kuningas, valge_kuningas_v = pildi_laadimine('Pildid\\valge_kuningas.png', k)
 
-valge_vanker = pildi_laadimine('Pildid\\valge_vanker.png')
-valge_vanker_v = pygame.transform.scale(valge_vanker, (25, 25))
+    global valge_oda, valge_oda_v
+    valge_oda, valge_oda_v = pildi_laadimine('Pildid\\valge_oda.png', k)
 
-valge_ettur = pygame.image.load('Pildid\\valge_ettur.png')
-valge_ettur = pygame.transform.scale(valge_ettur, (50,50))
-valge_ettur_v = pygame.transform.scale(valge_ettur, (25, 25))
+    global valge_ratsu, valge_ratsu_v
+    valge_ratsu, valge_ratsu_v = pildi_laadimine('Pildid\\valge_ratsu.png', k)
 
+    global valge_vanker, valge_vanker_v
+    valge_vanker, valge_vanker_v = pildi_laadimine('Pildid\\valge_vanker.png', k)
+
+    global valge_ettur, valge_ettur_v
+    valge_ettur = pygame.image.load('Pildid\\valge_ettur.png')
+    valge_ettur = pygame.transform.scale(valge_ettur, (50*k,50*k))
+    valge_ettur_v = pygame.transform.scale(valge_ettur, (25*k, 25*k))
+
+pildid()
 valged_pildid = [valge_vanker, valge_ratsu, valge_oda, valge_lipp, valge_kuningas, valge_ettur]
 väiksed_valged_pildid = [valge_vanker_v, valge_ratsu_v, valge_oda_v, valge_lipp_v, valge_kuningas_v, valge_ettur_v]
 mustad_pildid = [must_vanker, must_ratsu, must_oda, must_lipp, must_kuningas, must_ettur]
@@ -110,40 +119,57 @@ game_over = False
 
 
 def malelaud():
-    pygame.draw.rect(screen, 'gray', [0, 0, 600, 50])
-    pygame.draw.rect(screen, 'gray', [600, 600, 150, 50])
-    pygame.draw.rect(screen, 'gold', [0, 0, 600, 50], 3)
-    pygame.draw.rect(screen, 'gold2', [600, 0, 150, HEIGHT], 3)
-    pygame.draw.rect(screen, 'gold', [600, 600, 150, 50], 3)
+    k = vähim_kordaja()
+    pygame.draw.rect(screen, 'gray', [0, 0, 600*k, 50*k])
+    pygame.draw.rect(screen, 'gray', [600*k, 600*k, 150*k, 50*k])
+    pygame.draw.rect(screen, 'gold', [0, 0, 600*k, 50*k], 3)
+    pygame.draw.rect(screen, 'gold2', [600*k, 0, 150*k, HEIGHT*k], 3)
+    pygame.draw.rect(screen, 'gold', [600*k, 600*k, 150*k, 50*k], 3)
     for i in range(32):
         veerg = i % 4
         rida = i // 4
         if rida % 2 != 0:
-            pygame.draw.rect(screen, 'chartreuse4', [450 - (veerg*150), rida * 75 + 50, 75, 75])
+            pygame.draw.rect(screen, 'chartreuse4', [(450 - (veerg*150))*k, (rida * 75 + 50)*k, 75*k, 75*k])
         else:
-            pygame.draw.rect(screen, 'chartreuse4', [525 - (veerg*150), rida * 75 + 50, 75, 75])
+            pygame.draw.rect(screen, 'chartreuse4', [(525 - (veerg*150))*k, (rida * 75 + 50)*k, 75*k, 75*k])
     for i in range(9):
-        pygame.draw.line(screen, 'black', (0, 75 * i + 50), (600, 75 * i + 50), 2)
-        pygame.draw.line(screen, 'black', (75 * i, 50), (75 * i  , 650), 2)
+        pygame.draw.line(screen, 'black', (0, (75 * i + 50)*k), (600*k, (75 * i + 50)*k), 2)
+        pygame.draw.line(screen, 'black', (75 * i*k, 50*k), (75 * i*k  , 650*k), 2)
     käigu_tekst = ['Valge: vali nupp!', 'Valge: vali käik', 'Must: vali nupp', 'Must: vali käik']
-    screen.blit(suur_font.render(käigu_tekst[käigu_järk], True, 'black'), (190, 15))
-    screen.blit(kesk_font.render('Forfeit', True, 'black'), (640, 615))
+    screen.blit(suur_font.render(käigu_tekst[käigu_järk], True, 'black'), (190*k, 15*k))
+    screen.blit(kesk_font.render('Forfeit', True, 'black'), (640*k, 615*k))
 
-def malendid():
+def malendidlaual():
+    k = vähim_kordaja()
     for y in range(len(algseis)):
         for x in range(len(algseis[y])):
             if algseis[y][x] in valged:
                 i = valged.index(algseis[y][x])
                 if i == 5:
-                    screen.blit(valged_pildid[i], (15 + (x * 75), 65 + (y * 75)))
+                    screen.blit(valged_pildid[i], (((15 + x * 75)*k), ((65 + y * 75)*k)))
                 else:
-                    screen.blit(valged_pildid[i], (10 + (x * 75), 60 + (y * 75)))
+                    screen.blit(valged_pildid[i], (((10 + x * 75)*k), ((60 + y * 75)*k)))
             elif algseis[y][x] in mustad:
                 i = mustad.index(algseis[y][x])
                 if i == 5:
-                    screen.blit(mustad_pildid[i], (15 + (x * 75), 65 + (y * 75)))
+                    screen.blit(mustad_pildid[i], (((15 + x * 75)*k), ((65 + y * 75)*k)))
                 else:
-                    screen.blit(mustad_pildid[i], (10 + (x * 75), 60 + (y * 75)))
+                    screen.blit(mustad_pildid[i], (((10 + x * 75)*k), ((60 + y * 75)*k)))
+
+def muuda_suurust():  #resizeimine
+    global suur_font, kesk_font
+    suur_font = pygame.font.Font(pygame.font.get_default_font(), int(25*vähim_kordaja()))
+    kesk_font = pygame.font.Font(pygame.font.get_default_font(), int(20*vähim_kordaja()))
+    pildid()
+    global valged_pildid, väiksed_valged_pildid, mustad_pildid, väiksed_mustad_pildid
+    valged_pildid = [valge_vanker, valge_ratsu, valge_oda, valge_lipp, valge_kuningas, valge_ettur]
+    väiksed_valged_pildid = [valge_vanker_v, valge_ratsu_v, valge_oda_v, valge_lipp_v, valge_kuningas_v, valge_ettur_v]
+    mustad_pildid = [must_vanker, must_ratsu, must_oda, must_lipp, must_kuningas, must_ettur]
+    väiksed_mustad_pildid = [must_vanker_v, must_ratsu_v, must_oda_v, must_lipp_v, must_kuningas_v, must_ettur_v]
+    malelaud()
+    malendidlaual()
+    screen = pygame.display.set_mode((WIDTH*vähim_kordaja(), HEIGHT*vähim_kordaja()),pygame.RESIZABLE)
+    pygame.display.update()
 
 
 def vankri_käigud(seis,vankri_pos): 		
@@ -337,42 +363,39 @@ def nupu_käigud(seis, nupu_pos):
 #print(algseis[0][3-8])
 #print(lipu_käigud(algseis,[3,0]))	
 #print(nupu_käigud(algseis,[2,3]))
-
+x = 0
 
 run = True
 while run:
     kell.tick(fps)
     screen.fill('light yellow')
     malelaud()
-    malendid()
-    pygame.display.flip() #Hetkel on jama see, et kogu mäng on 30 fps-i ja nupu valikud ilmuvad ainult korraks
-    muudetav_suurus=75			#muudetav suurus oleks ühe malelaua ruudu suurus
-    ülemise_kasti_suurus=50
+    malendidlaual()
+    if x != 1:
+        pygame.display.flip() #Hetkel on jama see, et kogu mäng on 30 fps-i ja nupu valikud ilmuvad ainult korraks
+    muudetav_suurus=75*vähim_kordaja()			#muudetav suurus oleks ühe malelaua ruudu suurus
+    ülemise_kasti_suurus=50*vähim_kordaja()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not game_over:
-            x = (event.pos[1]- ülemise_kasti_suurus) // muudetav_suurus #kuna üleval on teksti kast, siis see suurus on vaja maha lahutada
-            y = event.pos[0] // muudetav_suurus 		# leiab x ja y koordinaadi
+            x = int((event.pos[1]- ülemise_kasti_suurus) // muudetav_suurus) #kuna üleval on teksti kast, siis see suurus on vaja maha lahutada
+            y = int(event.pos[0] // muudetav_suurus) 		# leiab x ja y koordinaadi
             if x<8 and y< 8:
                 if algseis[x][y] != ' ':
                     käigud=nupu_käigud(algseis,[x,y])
                     for el in käigud[0]:
                         y_koord, x_koord= el
                         ring=pygame.image.load('Pildid\\ring.png')
-                        ring = pygame.transform.scale(ring, (40,40))
+                        ring = pygame.transform.scale(ring, (40*vähim_kordaja(),40*vähim_kordaja()))
                         #pygame.draw.circle(screen, (255,0,0), (15 + (x_koord * 75), 65 + (y_koord * 75)), 5)
                         if x_koord<8 and y_koord<8 and x_koord>=0 and y_koord>=0:
-                            screen.blit(ring,(20+ (x_koord * 75), 70 + (y_koord * 75)))
+                            screen.blit(ring,(((20+ x_koord * 75)*vähim_kordaja()), ((70 + y_koord * 75)*vähim_kordaja())))
                             pygame.display.update()
+                            x = 1
                             
         elif event.type == pygame.VIDEORESIZE:
-            suurus = pygame.display.get_window_size()
-            kordaja_x = suurus[0]/WIDTH
-            kordaja_y = suurus[1]/HEIGHT
-            
-        #    screen.blit(pygame.transform.scale(malelaud(), event.dict['size']), (0, 0))
-        #    pygame.display.update()
+            muuda_suurust()
 pygame.quit()
 
     
