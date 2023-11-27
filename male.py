@@ -46,8 +46,6 @@ def tule_kontroll(nupp,kas_tuli):
         return False
 
 käigu_järk = 0 #0 - valge käik; 1 - valge käik, nupp valitud; 2 - musta käik; 3 - musta käik, nupp valitud
-valik = 100  #default, käigu ajal võtab nupu väärtuse
-sobivad_käigud = []
 
 def vähim_kordaja():  #akna suuruse muutmise kordaja
     suurus = pygame.display.get_window_size()
