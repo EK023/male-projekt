@@ -15,7 +15,7 @@ kesk_font = pygame.font.Font(pygame.font.get_default_font(), 20)
 #ettur(pawn),vanker(rook),ratsu(horse),oda(bishop),kuningas,lipp(queen)//
 algseis= [['v','r','o','l','k','o','r','v'],
           ['e','e','e','e','e','e','e','e'],		#väikse tähega on mustad ja esitähega on eristatavad nupud
-          [' ',' ',' ',' ',' ',' ',' ',' '],
+          [' ',' ',' ',' ','L',' ',' ',' '],
           [' ',' ',' ',' ',' ',' ','k',' '],
           [' ',' ',' ',' ',' ',' ',' ',' '],
           [' ',' ',' ',' ',' ',' ',' ',' '],
@@ -79,7 +79,7 @@ def pildid():
     must_vanker, must_vanker_v = pildi_laadimine('Pildid\\must_vanker.png', k)
 
     global must_ettur, must_ettur_v
-    must_ettur = pygame.image.load('Pildid\\must_ettur.png')	#Ma muutsin seda pilti natukene, vaata kas nii näeb see sinu arvates ok välja, siis on võimalik kõik nupud ühe suuruselt laadida
+    must_ettur = pygame.image.load('Pildid\\must_ettur.png')
     must_ettur = pygame.transform.scale(must_ettur, (50*k,50*k))
     must_ettur_v = pygame.transform.scale(must_ettur, (25*k, 25*k))
 
@@ -355,13 +355,15 @@ def nupu_käigud(seis, nupu_pos):
         käigud= vankri_käigud(seis, nupu_pos)
     elif seis[x][y].lower()== 'e':
         käigud=etturi_käigud(seis, nupu_pos)
+    elif seis[x][y]==' ':
+        käigud=[[],'lasfknlfkadn']
     return käigud
    
 #print(kuninga_käigud(algseis,[4,3]))	
 #print(algseis[0][3-8])
 #print(lipu_käigud(algseis,[3,0]))	
 #print(nupu_käigud(algseis,[2,3]))
-x = 0
+asi = 0
 
 run = True
 while run:
@@ -369,29 +371,47 @@ while run:
     screen.fill('light yellow')
     malelaud()
     malendidlaual()
-    if x != 1:
-        pygame.display.flip() #Hetkel on jama see, et kogu mäng on 30 fps-i ja nupu valikud ilmuvad ainult korraks
+    if asi != 1:
+        pygame.display.flip() 
     muudetav_suurus=75*vähim_kordaja()			#muudetav suurus oleks ühe malelaua ruudu suurus
     ülemise_kasti_suurus=50*vähim_kordaja()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not game_over:
-            x = int((event.pos[1]- ülemise_kasti_suurus) // muudetav_suurus) #kuna üleval on teksti kast, siis see suurus on vaja maha lahutada
+            x = int((event.pos[1]- ülemise_kasti_suurus) // muudetav_suurus) #kuna üleval on tekstikast, siis see suurus on vaja maha lahutada
             y = int(event.pos[0] // muudetav_suurus) 		# leiab x ja y koordinaadi
             if x<8 and y< 8:
-                if algseis[x][y] != ' ':
+                if asi==1 and [x,y] in käigud[0]:
+                    nupp= algseis[nupu_x][nupu_y]
+                    if nupp==' ':
+                        pygame.display.flip()
+                    else:
+                        print(nupp)
+                        if nupp== 'e' and x==7:
+                            nupp='l'
+                        if nupp=='E' and x==0:
+                            nupp='L'
+                        algseis[nupu_x][nupu_y]= ' '
+                        algseis[x][y]= nupp
+                    malelaud()
+                    malendidlaual()
+                    pygame.display.flip()
+                    #if algseis[x][y] != ' ':'''
+                else:
+                    nupu_x= x
+                    nupu_y= y
                     käigud=nupu_käigud(algseis,[x,y])
+                    print(käigud)
                     for el in käigud[0]:
                         y_koord, x_koord= el
                         ring=pygame.image.load('Pildid\\ring.png')
                         ring = pygame.transform.scale(ring, (40*vähim_kordaja(),40*vähim_kordaja()))
-                        #pygame.draw.circle(screen, (255,0,0), (15 + (x_koord * 75), 65 + (y_koord * 75)), 5)
+                            #pygame.draw.circle(screen, (255,0,0), (15 + (x_koord * 75), 65 + (y_koord * 75)), 5)
                         if x_koord<8 and y_koord<8 and x_koord>=0 and y_koord>=0:
                             screen.blit(ring,(((20+ x_koord * 75)*vähim_kordaja()), ((70 + y_koord * 75)*vähim_kordaja())))
                             pygame.display.update()
-                            x = 1
-                            
+                            asi = 1
         elif event.type == pygame.VIDEORESIZE:
             muuda_suurust()
 pygame.quit()
