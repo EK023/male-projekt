@@ -45,7 +45,7 @@ def tule_kontroll(nupp,kas_tuli):
     else:
         return False
 
-käigu_järk = 0 #0 - valge käik; 1 - valge käik, nupp valitud; 2 - musta käik; 3 - musta käik, nupp valitud
+käigu_järk = 0 #0 - valge käik; 1 - musta käik
 
 def vähim_kordaja():  #akna suuruse muutmise kordaja
     suurus = pygame.display.get_window_size()
@@ -133,7 +133,7 @@ def malelaud():
     for i in range(9):
         pygame.draw.line(screen, 'black', (0, (75 * i + 50)*k), (600*k, (75 * i + 50)*k), 2)
         pygame.draw.line(screen, 'black', (75 * i*k, 50*k), (75 * i*k  , 650*k), 2)
-    käigu_tekst = ['Valge: vali nupp!', 'Valge: vali käik', 'Must: vali nupp', 'Must: vali käik']
+    käigu_tekst = ['Valge käik!', 'Musta käik!']
     screen.blit(suur_font.render(käigu_tekst[käigu_järk], True, 'black'), (190*k, 15*k))
     screen.blit(kesk_font.render('Forfeit', True, 'black'), (640*k, 615*k))
 
@@ -386,6 +386,7 @@ while run:
                     nupp= algseis[nupu_x][nupu_y]
                     if nupp==' ':
                         pygame.display.flip()
+                    
                     else:                       #käikude tegemine
                         print(nupp)
                         if nupp== 'e' and x==7:         #etturi automaatne muutmine lipuks
@@ -395,19 +396,26 @@ while run:
                         algseis[nupu_x][nupu_y]= ' '
                         algseis[x][y]= nupp
                     asi = 0                     #et ei kuvaks topelt
+                    if käigu_järk  == 0:
+                        käigu_järk = 1
+                    else:
+                        käigu_järk = 0
+                    print(käigu_järk)
                     #if algseis[x][y] != ' ':'''
                 else:
                     nupu_x= x
                     nupu_y= y
-                    käigud=nupu_käigud(algseis,[x,y])
-                    for el in käigud[0]:
-                        y_koord, x_koord= el
-                        ring=pygame.image.load('Pildid\\ring.png')
-                        ring = pygame.transform.scale(ring, (40*vähim_kordaja(),40*vähim_kordaja()))
-                        if x_koord<8 and y_koord<8 and x_koord>=0 and y_koord>=0:
-                            screen.blit(ring,(((20+ x_koord * 75)*vähim_kordaja()), ((70 + y_koord * 75)*vähim_kordaja())))
-                            pygame.display.update()
-                            asi = 1                 #et käikude võimalused jääksid kuvama
+                    nupp= algseis[nupu_x][nupu_y]
+                    if (nupp in mustad and käigu_järk == 1) or (nupp in valged and käigu_järk == 0):            #Käigud vahelduksid
+                        käigud=nupu_käigud(algseis,[x,y])
+                        for el in käigud[0]:
+                            y_koord, x_koord= el
+                            ring=pygame.image.load('Pildid\\ring.png')
+                            ring = pygame.transform.scale(ring, (40*vähim_kordaja(),40*vähim_kordaja()))
+                            if x_koord<8 and y_koord<8 and x_koord>=0 and y_koord>=0:
+                                screen.blit(ring,(((20+ x_koord * 75)*vähim_kordaja()), ((70 + y_koord * 75)*vähim_kordaja())))
+                                pygame.display.update()
+                                asi = 1                 #et käikude võimalused jääksid kuvama
         elif event.type == pygame.VIDEORESIZE:
             muuda_suurust()
 pygame.quit()
