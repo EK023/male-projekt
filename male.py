@@ -23,6 +23,8 @@ algseis= [['v','r','o','l','k','o','r','v'],
           ['V','R','O','L','K','O','R','V']]
 valged=['V','R','O','L','K','E']
 mustad=['v','r','o','l','k','e']
+
+
 def värv(seis,nupu_pos):		#Leiab, mis värvi nupuga tegemist on, vastavalt, kas tegemist on suure või väikse tähega
     if seis[nupu_pos[0]][nupu_pos[1]].islower():
         pool='M'
@@ -318,7 +320,7 @@ def ratsu_käigud(seis,ratsu_pos): #kaks võtab koordinaadi, mille suhtes liigut
                     if seis[x_koord+j][y_koord+suund] in vastased:
                         tuli=tule_kontroll(seis[x_koord+j][y_koord+suund],tuli)
     return käik, tuli
-def kuninga_käigud(seis,kuninga_pos):
+def kuninga_käigud(seis,kuninga_pos,vasak,parem,kuningas):
     pool=värv(seis,kuninga_pos)
     oma=omad(pool)
     vastane=vaenlased(pool)
@@ -337,14 +339,27 @@ def kuninga_käigud(seis,kuninga_pos):
             if x+suund >=0 and x+suund<8 and y+ysuund >=0 and y+ysuund <8:
                 if seis[x+suund][y+ysuund] not in oma:
                     käigud.append([x+suund,y+ysuund])
+    if kuningas and parem and seis[x][y+2] ==' 'and seis[x][y+1]==' ':
+        käigud.append([x,y+2])
+    if kuningas and vasak and seis[x][y-2] ==' 'and seis[x][y-1]==' ' and seis[x][y-3]==' ':
+        käigud.append([x,y-2])
     return käigud
 
-def nupu_käigud(seis, nupu_pos):
+parem_V,vasak_V,kuningas_V,parem_m,vasak_m, kuningas_m=True,True,True,True,True,True #Vangerduse jaoks vajalikud
+def nupu_käigud(seis, nupu_pos,parem_V,vasak_V,kuningas_V,parem_m,vasak_m, kuningas_m):
     x,y =nupu_pos
     käigud=[]
     if seis[x][y].lower()== 'k':
-        käigud=kuninga_käigud(seis, nupu_pos)
-        käigud=(käigud,'midagi hästi tarka') # Teiste nuppude puhul on liskas tule asi
+        pool=värv(seis,nupu_pos)
+        if pool=='V':
+            vasak,parem,kuningas = parem_V,vasak_V,kuningas_V
+            kuningas_V=False
+        else:
+            vasak,parem,kuningas = parem_m,vasak_m, kuningas_m
+            kuningas_m=False
+        käigud=kuninga_käigud(seis, nupu_pos,vasak,parem,kuningas)
+        käigud=(käigud,' jljk') # Teiste nuppude puhul on lisaks tule asi
+        
     elif seis[x][y].lower()== 'l':
         käigud=lipu_käigud(seis, nupu_pos)
     elif seis[x][y].lower()== 'o':
@@ -353,18 +368,25 @@ def nupu_käigud(seis, nupu_pos):
         käigud=ratsu_käigud(seis, nupu_pos)
     elif seis[x][y].lower()== 'v':
         käigud= vankri_käigud(seis, nupu_pos)
+        pool=värv(seis,nupu_pos)
+        if pool=='V':
+            if nupu_pos[0]==0:
+                vasak_V=False
+            elif nupu_pos[0]==7:
+                parem_V=False
+        else:
+            if nupu_pos[0]==0:
+                vasak_m=False
+            elif nupu_pos[0]==7:
+                parem_m=False
     elif seis[x][y].lower()== 'e':
         käigud=etturi_käigud(seis, nupu_pos)
     elif seis[x][y]==' ':
         käigud=[[],'lasfknlfkadn']
     return käigud
    
-#print(kuninga_käigud(algseis,[4,3]))	
-#print(algseis[0][3-8])
-#print(lipu_käigud(algseis,[3,0]))	
-#print(nupu_käigud(algseis,[2,3]))
-asi = 0
 
+asi = 0
 run = True
 while run:
     kell.tick(fps)
@@ -399,7 +421,7 @@ while run:
                 else:
                     nupu_x= x
                     nupu_y= y
-                    käigud=nupu_käigud(algseis,[x,y])
+                    käigud=nupu_käigud(algseis,[x,y],parem_V,vasak_V,kuningas_V,parem_m,vasak_m, kuningas_m)
                     for el in käigud[0]:
                         y_koord, x_koord= el
                         ring=pygame.image.load('Pildid\\ring.png')
