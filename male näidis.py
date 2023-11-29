@@ -72,7 +72,7 @@ piece_list = ['pawn', 'queen', 'king', 'knight', 'rook', 'bishop']
 # check variables/ flashing counter
 counter = 0
 winner = ''
-game_over = False
+game_over = True
 
 
 # draw main game board

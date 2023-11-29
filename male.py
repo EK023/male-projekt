@@ -358,6 +358,12 @@ def nupu_käigud(seis, nupu_pos):
     elif seis[x][y]==' ':
         käigud=[[],'lasfknlfkadn']
     return käigud
+
+def lõpukast():
+    k = vähim_kordaja()
+    pygame.draw.rect(screen, 'black', [110*k, 150*k, 400*k, 100*k])
+    screen.blit(suur_font.render(f'{võitja} võitis!', True, 'white'), (225*k, 170*k))
+    screen.blit(kesk_font.render(f'Uue mängu jaoks vajuta enterit!', True, 'white'), (160*k, 200*k))
    
 #print(kuninga_käigud(algseis,[4,3]))	
 #print(algseis[0][3-8])
@@ -384,23 +390,23 @@ while run:
             if x<8 and y< 8:
                 if asi==1 and [x,y] in käigud[0]:
                     nupp= algseis[nupu_x][nupu_y]
-                    if nupp==' ':
-                        pygame.display.flip()
-                    
-                    else:                       #käikude tegemine
-                        print(nupp)
-                        if nupp== 'e' and x==7:         #etturi automaatne muutmine lipuks
-                            nupp='l'
-                        if nupp=='E' and x==0:
-                            nupp='L'
-                        algseis[nupu_x][nupu_y]= ' '
-                        algseis[x][y]= nupp
+                    if algseis[x][y].lower() == 'k':
+                        if käigu_järk == 0:
+                            võitja = 'Valge'
+                        if käigu_järk == 1:
+                            võitja = 'Must'
+                    if nupp== 'e' and x==7:         #etturi automaatne muutmine lipuks
+                        nupp='l'
+                    if nupp=='E' and x==0:
+                        nupp='L'
+                    algseis[nupu_x][nupu_y]= ' '
+                    algseis[x][y]= nupp
                     asi = 0                     #et ei kuvaks topelt
-                    if käigu_järk  == 0:
-                        käigu_järk = 1
-                    else:
-                        käigu_järk = 0
-                    print(käigu_järk)
+                    if game_over == False:
+                        if käigu_järk == 0:
+                            käigu_järk = 1
+                        else:
+                            käigu_järk = 0
                     #if algseis[x][y] != ' ':'''
                 else:
                     nupu_x= x
@@ -418,6 +424,12 @@ while run:
                                 asi = 1                 #et käikude võimalused jääksid kuvama
         elif event.type == pygame.VIDEORESIZE:
             muuda_suurust()
+
+    if võitja!='':
+        game_over= True
+        lõpukast()
+        pygame.display.flip()
+    
 pygame.quit()
 
     
