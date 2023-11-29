@@ -386,32 +386,28 @@ while run:
                     nupp= algseis[nupu_x][nupu_y]
                     if nupp==' ':
                         pygame.display.flip()
-                    else:
+                    else:                       #käikude tegemine
                         print(nupp)
-                        if nupp== 'e' and x==7:
+                        if nupp== 'e' and x==7:         #etturi automaatne muutmine lipuks
                             nupp='l'
                         if nupp=='E' and x==0:
                             nupp='L'
                         algseis[nupu_x][nupu_y]= ' '
                         algseis[x][y]= nupp
-                    malelaud()
-                    malendidlaual()
-                    pygame.display.flip()
+                    asi = 0                     #et ei kuvaks topelt
                     #if algseis[x][y] != ' ':'''
                 else:
                     nupu_x= x
                     nupu_y= y
                     käigud=nupu_käigud(algseis,[x,y])
-                    print(käigud)
                     for el in käigud[0]:
                         y_koord, x_koord= el
                         ring=pygame.image.load('Pildid\\ring.png')
                         ring = pygame.transform.scale(ring, (40*vähim_kordaja(),40*vähim_kordaja()))
-                            #pygame.draw.circle(screen, (255,0,0), (15 + (x_koord * 75), 65 + (y_koord * 75)), 5)
                         if x_koord<8 and y_koord<8 and x_koord>=0 and y_koord>=0:
                             screen.blit(ring,(((20+ x_koord * 75)*vähim_kordaja()), ((70 + y_koord * 75)*vähim_kordaja())))
                             pygame.display.update()
-                            asi = 1
+                            asi = 1                 #et käikude võimalused jääksid kuvama
         elif event.type == pygame.VIDEORESIZE:
             muuda_suurust()
 pygame.quit()
