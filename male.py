@@ -15,8 +15,8 @@ kesk_font = pygame.font.Font(pygame.font.get_default_font(), 20)
 #ettur(pawn),vanker(rook),ratsu(horse),oda(bishop),kuningas,lipp(queen)//
 algseis= [['v','r','o','l','k','o','r','v'],
           ['e','e','e','e','e','e','e','e'],		#väikse tähega on mustad ja esitähega on eristatavad nupud
-          [' ',' ',' ',' ','L',' ',' ',' '],
-          [' ',' ',' ',' ',' ',' ','k',' '],
+          [' ',' ',' ',' ',' ',' ',' ',' '],
+          [' ',' ',' ',' ',' ',' ',' ',' '],
           [' ',' ',' ',' ',' ',' ',' ',' '],
           [' ',' ',' ',' ',' ',' ',' ',' '],
           ['E','E','E','E','E','E','E','E'],		#suure tähega valged
@@ -353,13 +353,10 @@ def nupu_käigud(seis, nupu_pos,parem_V,vasak_V,kuningas_V,parem_m,vasak_m, kuni
         pool=värv(seis,nupu_pos)
         if pool=='V':
             vasak,parem,kuningas = parem_V,vasak_V,kuningas_V
-            kuningas_V=False
         else:
-            vasak,parem,kuningas = parem_m,vasak_m, kuningas_m
-            kuningas_m=False
+            vasak,parem,kuningas = parem_m,vasak_m, kuningas_m   
         käigud=kuninga_käigud(seis, nupu_pos,vasak,parem,kuningas)
-        käigud=(käigud,' jljk') # Teiste nuppude puhul on lisaks tule asi
-        
+        käigud=(käigud,' jljk') # Teiste nuppude puhul on lisaks tule asi      
     elif seis[x][y].lower()== 'l':
         käigud=lipu_käigud(seis, nupu_pos)
     elif seis[x][y].lower()== 'o':
@@ -368,17 +365,6 @@ def nupu_käigud(seis, nupu_pos,parem_V,vasak_V,kuningas_V,parem_m,vasak_m, kuni
         käigud=ratsu_käigud(seis, nupu_pos)
     elif seis[x][y].lower()== 'v':
         käigud= vankri_käigud(seis, nupu_pos)
-        pool=värv(seis,nupu_pos)
-        if pool=='V':
-            if nupu_pos[0]==0:
-                vasak_V=False
-            elif nupu_pos[0]==7:
-                parem_V=False
-        else:
-            if nupu_pos[0]==0:
-                vasak_m=False
-            elif nupu_pos[0]==7:
-                parem_m=False
     elif seis[x][y].lower()== 'e':
         käigud=etturi_käigud(seis, nupu_pos)
     elif seis[x][y]==' ':
@@ -412,7 +398,7 @@ while run:
             if x<8 and y< 8:
                 if asi==1 and [x,y] in käigud[0]:
                     nupp= algseis[nupu_x][nupu_y]
-                    if algseis[x][y].lower() == 'k':
+                    if algseis[x][y].lower() == 'k':	#Mängu lõppemine, kui kuningas ära võetakse
                         if käigu_järk == 0:
                             võitja = 'Valge'
                         if käigu_järk == 1:
@@ -421,15 +407,44 @@ while run:
                         nupp='l'
                     if nupp=='E' and x==0:
                         nupp='L'
+                    if nupu_y-y==2 and nupp.lower()=='k':		#Vangerdus vasakule
+                        if nupp=='K':
+                            algseis[x][y+1]='V'
+                            algseis[x][0]=' '
+                        else:
+                            algseis[x][y+1]='v'
+                            algseis[x][0]=' '
+                    if y-nupu_y==2 and nupp.lower()=='k': #Vangerdus paremale
+                        if nupp=='K':
+                            algseis[x][y-1]='V'
+                            algseis[x][7]=' '
+                        else:
+                            algseis[x][y-1]='v'
+                            algseis[x][7]=' '
                     algseis[nupu_x][nupu_y]= ' '
                     algseis[x][y]= nupp
+                    if nupp.lower()=='k':		#võtab vangerduse võimaluse ära, kui liigutakse kuningat
+                        if nupp=='K':
+                            kuningas_V=False
+                        else:
+                            kuningas_m=False
+                    if nupp.lower()=='v': #Kaotab vangerdusvõimaluse ühele poole ära, kui vankrit on liigutatud
+                        if nupp=='V':
+                            if y==0:
+                                vasak_V=False
+                            elif y==7:
+                                parem_V=False
+                        elif nupp=='v':
+                            if y==0:
+                                vasak_m=False
+                            elif y==7:
+                                parem_m=False
                     asi = 0                     #et ei kuvaks topelt
                     if game_over == False:
                         if käigu_järk == 0:
                             käigu_järk = 1
                         else:
                             käigu_järk = 0
-                    #if algseis[x][y] != ' ':'''
                 else:
                     nupu_x= x
                     nupu_y= y
