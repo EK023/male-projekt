@@ -23,6 +23,7 @@ algseis= [['v','r','o','l','k','o','r','v'],
           ['V','R','O','L','K','O','R','V']]
 valged=['V','R','O','L','K','E']
 mustad=['v','r','o','l','k','e']
+läinud=[]
 
 
 def värv(seis,nupu_pos):		#Leiab, mis värvi nupuga tegemist on, vastavalt, kas tegemist on suure või väikse tähega
@@ -57,7 +58,7 @@ def vähim_kordaja():  #akna suuruse muutmise kordaja
 
 def pildi_laadimine(pilt, k):  #k - kordaja, võimaldab muuta piltide suurust koos aknaga, tagastab nii väikse kui suure pildi
     suurus=(60*k,60*k)	#siit on võimalik seda suurust muuta, võib ka täitsa algusesse tõsta
-    v_suurus = (25*k, 25*k)
+    v_suurus = (30*k, 30*k)
     l_pilt = pygame.image.load(pilt)  # load
     s_pilt = pygame.transform.scale(l_pilt, suurus)  #suur
     v_pilt = pygame.transform.scale(s_pilt, v_suurus)  #väike
@@ -155,6 +156,20 @@ def malendidlaual():
                     screen.blit(mustad_pildid[i], (((15 + x * 75)*k), ((65 + y * 75)*k)))
                 else:
                     screen.blit(mustad_pildid[i], (((10 + x * 75)*k), ((60 + y * 75)*k)))
+
+def võetud_nupud(li):
+    k = vähim_kordaja()
+    valge = 0
+    must = 0
+    for el in li:
+        if el in valged:
+            i = valged.index(el)
+            screen.blit(väiksed_valged_pildid[i], (625*k, (5 + 35*valge)*k))
+            valge += 1
+        if el in mustad:
+            i = mustad.index(el)
+            screen.blit(väiksed_mustad_pildid[i], (675*k, (5 + 35*must)*k))
+            must += 1
 
 def muuda_suurust():  #resizeimine
     global suur_font, kesk_font
@@ -385,18 +400,29 @@ while run:
     screen.fill('light yellow')
     malelaud()
     malendidlaual()
+    võetud_nupud(läinud)
     if nupp_valitud != 1:
         pygame.display.flip() 
     muudetav_suurus=75*vähim_kordaja()			#muudetav suurus oleks ühe malelaua ruudu suurus
     ülemise_kasti_suurus=50*vähim_kordaja()
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-        if ootus == 1:
-            game_over = False
-            winner = ''
-            käigu_järk = 0
-            algseis=[['v','r','o','l','k','o','r','v'],
+
+    if võitja!='':
+        game_over= True
+        lõpukast()
+        pygame.display.update()
+        wait = True
+        while wait:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    wait = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        wait = False
+        game_over = False
+        võitja = ''
+        käigu_järk = 0
+        läinud = []
+        algseis=[['v','r','o','l','k','o','r','v'],
                     ['e','e','e','e','e','e','e','e'],
                     [' ',' ',' ',' ',' ',' ',' ',' '],
                     [' ',' ',' ',' ',' ',' ',' ',' '],
@@ -404,12 +430,13 @@ while run:
                     [' ',' ',' ',' ',' ',' ',' ',' '],
                     ['E','E','E','E','E','E','E','E'],
                     ['V','R','O','L','K','O','R','V']]
-            kell.tick(fps)
-            screen.fill('light yellow')
-            malelaud()
-            malendidlaual()
-            pygame.display.flip()
-            ootus=0
+        malelaud()
+        malendidlaual()
+        pygame.display.flip()
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not game_over:
             x = int((event.pos[1]- ülemise_kasti_suurus) // muudetav_suurus) #kuna üleval on tekstikast, siis see suurus on vaja maha lahutada
             y = int(event.pos[0] // muudetav_suurus) 		# leiab x ja y koordinaadi
@@ -421,11 +448,8 @@ while run:
             if x<8 and y< 8:
                 if nupp_valitud==1 and [x,y] in käigud[0]:
                     nupp= algseis[nupu_x][nupu_y]
-                    if algseis[x][y].lower() == 'k':	#Mängu lõppemine, kui kuningas ära võetakse
-                        if käigu_järk == 0:
-                            võitja = 'Valge'
-                        if käigu_järk == 1:
-                            võitja = 'Must'
+                    võetud_nupp = algseis[x][y]
+                    läinud.append(võetud_nupp)
                     if nupp== 'e' and x==7:         #etturi automaatne muutmine lipuks
                         nupp='l'
                     if nupp=='E' and x==0:
@@ -463,6 +487,11 @@ while run:
                             elif y==7:
                                 parem_m=False
                     nupp_valitud = 0                     #et ei kuvaks topelt
+                    if võetud_nupp.lower() == 'k':	#Mängu lõppemine, kui kuningas ära võetakse
+                        if käigu_järk == 0:
+                            võitja = 'Valge'
+                        if käigu_järk == 1:
+                            võitja = 'Must'
                     if game_over == False:
                         if käigu_järk == 0:
                             käigu_järk = 1
@@ -484,34 +513,6 @@ while run:
                                 nupp_valitud = 1                 #et käikude võimalused jääksid kuvama
         elif event.type == pygame.VIDEORESIZE:
             muuda_suurust()
-
-    if võitja!='':
-        game_over= True
-        lõpukast()
-        pygame.display.update()
-        print(1)
-        wait = True
-        while wait:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    wait = False
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_RETURN:
-                        wait = False
-        game_over = False
-        võitja = ''
-        käigu_järk = 0
-        algseis=[['v','r','o','l','k','o','r','v'],
-                    ['e','e','e','e','e','e','e','e'],
-                    [' ',' ',' ',' ',' ',' ',' ',' '],
-                    [' ',' ',' ',' ',' ',' ',' ',' '],
-                    [' ',' ',' ',' ',' ',' ',' ',' '],
-                    [' ',' ',' ',' ',' ',' ',' ',' '],
-                    ['E','E','E','E','E','E','E','E'],
-                    ['V','R','O','L','K','O','R','V']]
-        malelaud()
-        malendidlaual()
-        pygame.display.flip()
         
     
 pygame.quit()
