@@ -513,9 +513,5 @@ while run:
                                 nupp_valitud = 1                 #et käikude võimalused jääksid kuvama
         elif event.type == pygame.VIDEORESIZE:
             muuda_suurust()
-        
-    
+
 pygame.quit()
-
-    
-
