@@ -121,10 +121,10 @@ game_over = False
 def malelaud():
     k = vähim_kordaja()
     pygame.draw.rect(screen, 'gray', [0, 0, 600*k, 50*k])
-    pygame.draw.rect(screen, 'gray', [600*k, 600*k, 150*k, 50*k])
+    pygame.draw.rect(screen, 'gray', [600*k, 575*k, 150*k, 75*k])
     pygame.draw.rect(screen, 'gold', [0, 0, 600*k, 50*k], 3)
     pygame.draw.rect(screen, 'gold2', [600*k, 0, 150*k, HEIGHT*k], 3)
-    pygame.draw.rect(screen, 'gold', [600*k, 600*k, 150*k, 50*k], 3)
+    pygame.draw.rect(screen, 'gold', [600*k, 575*k, 150*k, 75*k], 3)
     for i in range(32):
         veerg = i % 4
         rida = i // 4
@@ -137,7 +137,7 @@ def malelaud():
         pygame.draw.line(screen, 'black', (75 * i*k, 50*k), (75 * i*k  , 650*k), 2)
     käigu_tekst = ['Valge käik!', 'Musta käik!']
     screen.blit(suur_font.render(käigu_tekst[käigu_järk], True, 'black'), (190*k, 15*k))
-    screen.blit(kesk_font.render('Forfeit', True, 'black'), (640*k, 615*k))
+    screen.blit(kesk_font.render('Forfeit', True, 'black'), (640*k, 600*k))
 
 def malendidlaual():
     k = vähim_kordaja()
@@ -378,14 +378,14 @@ def lõpukast():
     screen.blit(kesk_font.render(f'Uue mängu jaoks vajuta enterit!', True, 'white'), (160*k, 200*k))
    
 
-asi = 0
+nupp_valitud = 0
 run = True
 while run:
     kell.tick(fps)
     screen.fill('light yellow')
     malelaud()
     malendidlaual()
-    if asi != 1:
+    if nupp_valitud != 1:
         pygame.display.flip() 
     muudetav_suurus=75*vähim_kordaja()			#muudetav suurus oleks ühe malelaua ruudu suurus
     ülemise_kasti_suurus=50*vähim_kordaja()
@@ -395,8 +395,14 @@ while run:
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not game_over:
             x = int((event.pos[1]- ülemise_kasti_suurus) // muudetav_suurus) #kuna üleval on tekstikast, siis see suurus on vaja maha lahutada
             y = int(event.pos[0] // muudetav_suurus) 		# leiab x ja y koordinaadi
+            print(x, y)
+            if x>6 and y>7:                         # forfeit nupp
+                if käigu_järk == 0:
+                    võitja = 'Must'
+                if käigu_järk == 1:
+                    võitja = 'Valge'
             if x<8 and y< 8:
-                if asi==1 and [x,y] in käigud[0]:
+                if nupp_valitud==1 and [x,y] in käigud[0]:
                     nupp= algseis[nupu_x][nupu_y]
                     if algseis[x][y].lower() == 'k':	#Mängu lõppemine, kui kuningas ära võetakse
                         if käigu_järk == 0:
@@ -439,7 +445,7 @@ while run:
                                 vasak_m=False
                             elif y==7:
                                 parem_m=False
-                    asi = 0                     #et ei kuvaks topelt
+                    nupp_valitud = 0                     #et ei kuvaks topelt
                     if game_over == False:
                         if käigu_järk == 0:
                             käigu_järk = 1
@@ -458,7 +464,7 @@ while run:
                             if x_koord<8 and y_koord<8 and x_koord>=0 and y_koord>=0:
                                 screen.blit(ring,(((20+ x_koord * 75)*vähim_kordaja()), ((70 + y_koord * 75)*vähim_kordaja())))
                                 pygame.display.update()
-                                asi = 1                 #et käikude võimalused jääksid kuvama
+                                nupp_valitud = 1                 #et käikude võimalused jääksid kuvama
         elif event.type == pygame.VIDEORESIZE:
             muuda_suurust()
 
