@@ -377,7 +377,7 @@ def lõpukast():
     screen.blit(suur_font.render(f'{võitja} võitis!', True, 'white'), (225*k, 170*k))
     screen.blit(kesk_font.render(f'Uue mängu jaoks vajuta enterit!', True, 'white'), (160*k, 200*k))
    
-
+ootus = 0
 nupp_valitud = 0
 run = True
 while run:
@@ -392,10 +392,27 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not game_over:
+        if ootus == 1:
+            game_over = False
+            winner = ''
+            käigu_järk = 0
+            algseis=[['v','r','o','l','k','o','r','v'],
+                    ['e','e','e','e','e','e','e','e'],
+                    [' ',' ',' ',' ',' ',' ',' ',' '],
+                    [' ',' ',' ',' ',' ',' ',' ',' '],
+                    [' ',' ',' ',' ',' ',' ',' ',' '],
+                    [' ',' ',' ',' ',' ',' ',' ',' '],
+                    ['E','E','E','E','E','E','E','E'],
+                    ['V','R','O','L','K','O','R','V']]
+            kell.tick(fps)
+            screen.fill('light yellow')
+            malelaud()
+            malendidlaual()
+            pygame.display.flip()
+            ootus=0
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not game_over:
             x = int((event.pos[1]- ülemise_kasti_suurus) // muudetav_suurus) #kuna üleval on tekstikast, siis see suurus on vaja maha lahutada
             y = int(event.pos[0] // muudetav_suurus) 		# leiab x ja y koordinaadi
-            print(x, y)
             if x>6 and y>7:                         # forfeit nupp
                 if käigu_järk == 0:
                     võitja = 'Must'
@@ -471,7 +488,31 @@ while run:
     if võitja!='':
         game_over= True
         lõpukast()
+        pygame.display.update()
+        print(1)
+        wait = True
+        while wait:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    wait = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        wait = False
+        game_over = False
+        võitja = ''
+        käigu_järk = 0
+        algseis=[['v','r','o','l','k','o','r','v'],
+                    ['e','e','e','e','e','e','e','e'],
+                    [' ',' ',' ',' ',' ',' ',' ',' '],
+                    [' ',' ',' ',' ',' ',' ',' ',' '],
+                    [' ',' ',' ',' ',' ',' ',' ',' '],
+                    [' ',' ',' ',' ',' ',' ',' ',' '],
+                    ['E','E','E','E','E','E','E','E'],
+                    ['V','R','O','L','K','O','R','V']]
+        malelaud()
+        malendidlaual()
         pygame.display.flip()
+        
     
 pygame.quit()
 
