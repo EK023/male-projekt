@@ -386,6 +386,8 @@ def nupu_käigud(seis, nupu_pos,parem_V,vasak_V,kuningas_V,parem_m,vasak_m, kuni
         käigud=[[],'lasfknlfkadn']
     return käigud
 
+#def võimalikud_käigud()
+
 def lõpukast():
     k = vähim_kordaja()
     pygame.draw.rect(screen, 'black', [110*k, 150*k, 400*k, 100*k])
@@ -446,11 +448,10 @@ while run:
                 if käigu_järk == 1:
                     võitja = 'Valge'
             if x<8 and y< 8:
+                
                 if nupp_valitud==1 and [x,y] in käigud[0]:
+                    print('Heii')
                     nupp= algseis[nupu_x][nupu_y]
-                    if (nupp in valged and käigu_järk == 1) or (nupp in mustad and käigu_järk == 0):  
-                        break  #Bugfix: Ennem oli võimalik käia vastase nupp oma nupu võimalike käikude ruudule valides alguses oma nupu 
-                               #ning enne käimist vajutades vastase nupu peale ning siis käiku tehes ilmus sinna kohale vastase nupp
                     võetud_nupp = algseis[x][y]
                     läinud.append(võetud_nupp)
                     if nupp== 'e' and x==7:         #etturi automaatne muutmine lipuks
@@ -504,6 +505,14 @@ while run:
                     nupu_x= x
                     nupu_y= y
                     nupp= algseis[nupu_x][nupu_y]
+                    if nupp_valitud==1 and ((nupp in valged and käigu_järk == 1) or (nupp in mustad and käigu_järk == 0) or nupp == ' '):
+                        print('Olen siin')
+                        nupp_valitud=0
+                        pygame.display.flip()
+                        break  #Bugfix: Ennem oli võimalik käia vastase nupp oma nupu võimalike käikude ruudule valides alguses oma nupu 
+                               #ning enne käimist vajutades vastase nupu peale ning siis käiku tehes ilmus sinna kohale vastase nupp
+                               #Lisaks kaovad nüüd nupu käigud ära kui vajutad kuhugile mujale
+                    
                     if (nupp in mustad and käigu_järk == 1) or (nupp in valged and käigu_järk == 0):            #Käigud vahelduksid
                         käigud=nupu_käigud(algseis,[x,y],parem_V,vasak_V,kuningas_V,parem_m,vasak_m, kuningas_m)
                         for el in käigud[0]:
