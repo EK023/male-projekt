@@ -448,6 +448,9 @@ while run:
             if x<8 and y< 8:
                 if nupp_valitud==1 and [x,y] in käigud[0]:
                     nupp= algseis[nupu_x][nupu_y]
+                    if (nupp in valged and käigu_järk == 1) or (nupp in mustad and käigu_järk == 0):  
+                        break  #Bugfix: Ennem oli võimalik käia vastase nupp oma nupu võimalike käikude ruudule valides alguses oma nupu 
+                               #ning enne käimist vajutades vastase nupu peale ning siis käiku tehes ilmus sinna kohale vastase nupp
                     võetud_nupp = algseis[x][y]
                     läinud.append(võetud_nupp)
                     if nupp== 'e' and x==7:         #etturi automaatne muutmine lipuks
