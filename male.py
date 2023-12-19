@@ -43,7 +43,7 @@ def omad(pool):
     else:
         return mustad
 def tule_kontroll(nupp,kas_tuli):
-    if nupp.lower()=='k' or kas_tuli:
+    if kas_tuli:
         return True
     else:
         return False
@@ -393,7 +393,7 @@ def lõpukast():
     pygame.draw.rect(screen, 'black', [110*k, 150*k, 400*k, 100*k])
     screen.blit(suur_font.render(f'{võitja} võitis!', True, 'white'), (225*k, 170*k))
     screen.blit(kesk_font.render(f'Uue mängu jaoks vajuta enterit!', True, 'white'), (160*k, 200*k))
-   
+    
 ootus = 0
 nupp_valitud = 0
 run = True
@@ -424,7 +424,7 @@ while run:
         võitja = ''
         käigu_järk = 0
         läinud = []
-        algseis=[['v','r','o','l','k','o','r','v'],
+        algseis=	[['v','r','o','l','k','o','r','v'],
                     ['e','e','e','e','e','e','e','e'],
                     [' ',' ',' ',' ',' ',' ',' ',' '],
                     [' ',' ',' ',' ',' ',' ',' ',' '],
@@ -450,10 +450,24 @@ while run:
             if x<8 and y< 8:
                 
                 if nupp_valitud==1 and [x,y] in käigud[0]:
-                    print('Heii')
                     nupp= algseis[nupu_x][nupu_y]
                     võetud_nupp = algseis[x][y]
                     läinud.append(võetud_nupp)
+                    
+                    #Vankri ära võtmisel vangerduse kaotamine
+                    if võetud_nupp.lower() == 'v':
+                        if x==0:
+                            if y==0:
+                                parem_m=False
+                            else:
+                                vasak_m=False 
+                        else:
+                            if y==0:
+                                parem_V=False
+                            else:
+                                vasak_V=False #Bugfix:  Enne ei olnud me arvestanud sellega, et vanker võidakse enne ära võtta, kui
+                                              #kuningas liigub, mistõttu ei kadunud vangerdusvõimalus ära vankriga, mida ei olnud enam laual(veel oli omale võimalik tasuta vanker teha)
+                                              #Millegi pärast ei ole päris töökindel veel
                     if nupp== 'e' and x==7:         #etturi automaatne muutmine lipuks
                         nupp='l'
                     if nupp=='E' and x==0:
@@ -506,7 +520,6 @@ while run:
                     nupu_y= y
                     nupp= algseis[nupu_x][nupu_y]
                     if nupp_valitud==1 and ((nupp in valged and käigu_järk == 1) or (nupp in mustad and käigu_järk == 0) or nupp == ' '):
-                        print('Olen siin')
                         nupp_valitud=0
                         pygame.display.flip()
                         break  #Bugfix: Ennem oli võimalik käia vastase nupp oma nupu võimalike käikude ruudule valides alguses oma nupu 
